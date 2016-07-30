@@ -1,4 +1,11 @@
 import http from 'http';
+import db from './db';
+
+// import List from './db/list';
+// import Item from './db/item';
+// import User from './db/user';
+
+db();
 
 http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
