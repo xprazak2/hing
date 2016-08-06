@@ -1,8 +1,8 @@
 import db from './src/db';
 import mongoose from 'mongoose';
-import List from './src/db/list';
-import User from './src/db/user';
-import Item from './src/db/item';
+import List from './src/models/list';
+import User from './src/models/user';
+import Item from './src/models/item';
 import gulp from 'gulp';
 import async from 'async';
 import gutil from 'gulp-util';
@@ -20,7 +20,7 @@ const itemObjs = [
     name: 'rice',
     amount: '1 kg',
     location: 'cellar',
-    expiry:  new Date('2017-05-05')
+    expiry: new Date('2017-05-05')
   },
   {
     name: 'peaches',
