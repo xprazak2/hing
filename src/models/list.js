@@ -13,6 +13,6 @@ list.methods.toView = function () {
     memo[attr] = this[attr];
     return memo;
   }, {});
-}
+};
 
 export default mongoose.model('List', list);

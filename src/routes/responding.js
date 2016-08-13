@@ -6,7 +6,7 @@ export function respondForCollection(res, collection) {
   res.json({ result: collection.map(item => item.toView()) });
 }
 
-export function handleError(err) {
+export function handleError(res, err) {
   res.status(err.status || 500);
   res.json({ message: err });
 }

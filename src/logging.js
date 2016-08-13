@@ -3,11 +3,11 @@ import config from './config';
 import expressWinston from 'express-winston';
 
 const createConsoleTransport = (opts) => {
-  return new (winston.transports.Console)(opts);
+  return new winston.transports.Console(opts);
 };
 
 const createFileTransport = (opts) => {
-  return new (winston.transports.File)(opts);
+  return new winston.transports.File(opts);
 };
 
 // common logger opts
@@ -19,7 +19,7 @@ let fileOpts = { colorize: false, timestamp: true, filename: config.logFile };
 // consoleOpts.json = true;
 const inDevelopment = () => {
   return config.env === 'development';
-}
+};
 
 // configure transports based on env
 if (inDevelopment()) {
@@ -29,7 +29,7 @@ if (inDevelopment()) {
 }
 
 // create logger
-export const logger = new (winston.Logger)({
+export const logger = new winston.Logger({
   transports: transports,
   level: config.logLevel
 });
@@ -39,10 +39,10 @@ export const expressLogger = expressWinston.logger({
   winstonInstance: logger,
   meta: false,
   expressFormat: true,
-  colorize: inDevelopment(),
+  colorize: inDevelopment()
 });
 
 // create express error logger - TODO
 export const expressErrorLogger = expressWinston.errorLogger({
-  winstonInstance: logger,
+  winstonInstance: logger
 });

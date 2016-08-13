@@ -1,9 +1,8 @@
 import db from './db';
 import config from './config';
-import { logger, expressLogger, expressErrorLogger } from './logging';
+import { logger, expressLogger } from './logging';
 
 import express from 'express';
-import path from 'path';
 import bodyParser from 'body-parser';
 
 db();
@@ -24,7 +23,7 @@ app.get('/sample', (req, res) => {
 });
 
 // error logger will be after routes and before any error handlers
-//app.use(expressErrorLogger);
+// app.use(expressErrorLogger);
 
 app.listen(config.port, () => {
   logger.info('Server started: http://localhost:' + config.port);
