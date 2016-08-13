@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { modelToView } from './rendering';
 
 const list = new mongoose.Schema({
   name: { type: String, unique: true },
@@ -9,10 +10,7 @@ const list = new mongoose.Schema({
 
 // cannot handle arrow function - outer this set to undefined
 list.methods.toView = function () {
-  return ['id', 'name', 'createdAt', 'updatedAt'].reduce((memo, attr) => {
-    memo[attr] = this[attr];
-    return memo;
-  }, {});
+  return modelToView(this, ['id', 'name', 'createdAt', 'updatedAt']);
 };
 
 export default mongoose.model('List', list);

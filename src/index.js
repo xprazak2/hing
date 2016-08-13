@@ -15,8 +15,10 @@ app.use(bodyParser.json());
 app.use(expressLogger);
 
 import listRoutes from './routes/list-routes';
+import itemRoutes from './routes/item-routes';
 
 app.use('/lists', listRoutes);
+app.use('/items', itemRoutes);
 
 app.get('/sample', (req, res) => {
   res.send('This is a sample route!');
