@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { modelToView } from './rendering';
 
 const list = new mongoose.Schema({
-  name: { type: String, unique: true },
+  name: { type: String, unique: true, required: true },
   userId: { type: mongoose.Schema.ObjectId, ref: 'User' }
 }, {
   timestamps: true
