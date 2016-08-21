@@ -11,13 +11,13 @@ const createItem = (list) => {
 
 const before = () => {
   let list = new List({ name: 'sampleList' });
-  return list.save().then(list => createItem(list));
+  return list.save().then(listItem => createItem(listItem));
 };
 
 hingTest('should not save item', (assert) => {
   let item = new Item();
   return item.save().catch(err => {
-    assert.ok(err.errors['name']);
+    assert.ok(err.errors.name);
     assert.end();
   });
 });
