@@ -31,7 +31,7 @@ const itemObjs = [
 ];
 
 const dbConnect = (callback) => {
-  db();
+  db.connect();
   callback(null);
 }
 
@@ -140,7 +140,7 @@ gulp.task('sampleSeed', () => {
     seedList,
     seedItems
   ], (err) => {
-    mongoose.connection.close()
+    db.disconnect();
   });
 });
 
@@ -151,6 +151,6 @@ gulp.task('sampleClear', () => {
     clearList,
     clearUser
   ], (err) => {
-    mongoose.connection.close();
+    db.disconnect();
   });
 });

@@ -5,7 +5,7 @@ import { logger, expressLogger } from './logging';
 import express from 'express';
 import bodyParser from 'body-parser';
 
-db();
+db.connect();
 let app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
