@@ -1,5 +1,7 @@
 import test from 'blue-tape';
 import db from '../src/db';
+import request from 'supertest-as-promised';
+import app from './index-for-testing';
 
 // do something before test
 function before (fn) {
@@ -40,7 +42,7 @@ export function teardown () {
   });
 }
 
-export function hingTest(description, fn, customBefore) {
+export function hingTest (description, fn, customBefore) {
   if (customBefore) {
     before(customBefore);
   }
@@ -50,4 +52,13 @@ export function hingTest(description, fn, customBefore) {
       after();
     });
   });
+}
+
+export function callGetRoute (path, code, onRes) {
+  return request(app)
+    .get(path)
+    .expect('Content-Type', /json/)
+    .expect(code)
+    .then(res => onRes(res))
+    .catch(err => assert.end(err));
 }

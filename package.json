@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "config": {
+    "suite": "test/**/*-test.js"
+  },
   "scripts": {
-    "test": "NODE_ENV=test babel-tape-runner test/*/*-test.js | faucet",
+    "test": "NODE_ENV=test babel-tape-runner $npm_package_config_suite | faucet",
     "dev": "nodemon --exec babel-node src/index.js",
     "prestart": "babel src --out-dir dist",
     "start": "node dist/index.js",
@@ -23,7 +26,10 @@
     "faucet": "0.0.1",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.7",
-    "nodemon": "^1.10.0"
+    "leaked-handles": "^5.2.0",
+    "nodemon": "^1.10.0",
+    "supertest": "^2.0.0",
+    "supertest-as-promised": "^4.0.0"
   },
   "dependencies": {
     "async": "^2.0.1",

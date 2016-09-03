@@ -20,10 +20,6 @@ import itemRoutes from './routes/item-routes';
 app.use('/lists', listRoutes);
 app.use('/items', itemRoutes);
 
-app.get('/sample', (req, res) => {
-  res.send('This is a sample route!');
-});
-
 // error logger will be after routes and before any error handlers
 // app.use(expressErrorLogger);
 
