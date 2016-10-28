@@ -7,6 +7,7 @@ mongoose.Promise = Promise;
 
 export default {
   connect: () => {
+    console.log('Connecting to ' + config.database);
     return mongoose.connect(config.database);
     mongoose.connection.on('error', () => {
       logger.error('Could not connect to Mongo');

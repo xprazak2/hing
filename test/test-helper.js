@@ -54,11 +54,40 @@ export function hingTest (description, fn, customBefore) {
   });
 }
 
-export function callGetRoute (path, code, onRes) {
-  return request(app)
-    .get(path)
+function callRoute (path, code, onRes, action, data) {
+  return action.call(request(app), path)
+    .send(data)
     .expect('Content-Type', /json/)
     .expect(code)
     .then(res => onRes(res))
-    .catch(err => assert.end(err));
+    .catch(err => {
+      console.log(err);
+      console.log(err.response.text);
+      after();
+      assert.end(err);
+      // assert not defined, this will exit the test suite with error
+      // if assert.end() is not present, test suite hangs
+      // assert is availabel inside onRes func, but it is skipped if any expect above fails
+      // TODO: attach hingTest to obj so we can move route testing functions inside
+      // and pass fn from line 45 into them, so we do not have to inside tests
+    });
 }
+
+// find a way how to metaprogramm this
+export function callGetRoute (path, code, onRes) {
+  return callRoute(path, code, onRes, request(app).get);
+}
+
+export function callDeleteRoute (path, code, onRes) {
+  return callRoute(path, code, onRes, request(app).delete);
+}
+
+export function callPostRoute (path, code, onRes, data) {
+  return callRoute(path, code, onRes, request(app).post, data);
+}
+
+export function callPutRoute (path, code, onRes, data) {
+  return callRoute(path, code, onRes, request(app).put, data);
+}
+
+
