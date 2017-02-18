@@ -21,12 +21,12 @@
     "regexYFlag": false,                        // enable the regular expression y flag
     "templateStrings": false,                   // enable template strings
     "unicodeCodePointEscapes": false,           // enable code point escapes
-    "jsx": false,                               // enable JSX
+    "jsx": true,                               // enable JSX
     "modules": true
   },
 
   "env": {
-    "browser": false,     // browser global variables.
+    "browser": true,     // browser global variables.
     "node": true,        // Node.js global variables and Node.js-specific rules.
     "amd": false,         // defines require() and define() as global variables as per the amd spec.
     "mocha": false,       // adds all of the Mocha testing global variables.
