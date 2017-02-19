@@ -1,4 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import Navbar from './navbar';
+// import styles from '../public/stylesheets/main.scss';
 
 class Hing extends Component {
   constructor(props) {
@@ -8,7 +10,10 @@ class Hing extends Component {
   render() {
     return (
       <div>
-        Hello from Humans!
+        <Navbar />
+        <div>
+          Hello from Humans!
+        </div>
       </div>
     );
   }
