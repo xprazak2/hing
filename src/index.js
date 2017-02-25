@@ -55,8 +55,8 @@ if (config.env === 'development') {
 import listRoutes from './routes/list-routes';
 import itemRoutes from './routes/item-routes';
 
-app.use('/lists', listRoutes);
-app.use('/items', itemRoutes);
+app.use('/api/lists', listRoutes);
+app.use('/api/items', itemRoutes);
 
 // create home route - TODO: move to a separate route file
 app.use('/', function (req, res) {

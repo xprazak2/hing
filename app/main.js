@@ -1,5 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Hing from './hing.js';
+// import Hing from './hing';
+import { Router, browserHistory } from 'react-router';
+import routes from './routes';
 
-ReactDOM.render(<Hing />, document.getElementById('hing'));
+ReactDOM.render(<Router history={ browserHistory }>
+                  { routes }
+                </Router>,
+                document.getElementById('hing')
+);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Navbar from './navbar';
-// import styles from '../public/stylesheets/main.scss';
+import Navbar from './components/navbar';
+import styles from '../public/stylesheets/main.scss';
 
 class Hing extends Component {
   constructor(props) {
@@ -11,8 +11,8 @@ class Hing extends Component {
     return (
       <div>
         <Navbar />
-        <div>
-          Hello from Humans!
+        <div className="ink-grid">
+          { this.props.children }
         </div>
       </div>
     );
