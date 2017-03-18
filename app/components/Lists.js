@@ -1,36 +1,27 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { fetchLists } from '../actions/lists-actions';
-import { bindActionCreators } from 'redux'
+import ListRow from './ListRow';
 
 class Lists extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
+    // console.log(this.props)
     this.props.fetchLists()
   }
 
   render() {
     return (
       <div className="column-group">
-        <div className="all-100 push-center">
+        <div >
           <table className="ink-table alternating">
             <thead>
               <tr>
                 <th className="align-left">Name</th>
                 <th className="align-left">Created At</th>
+                <th className="align-left">Actions</th>
               </tr>
             </thead>
             <tbody>
             { this.props.listsState.lists.map( list => {
-                return (
-                  <tr>
-                    <td> { list.name } </td>
-                    <td> { list.updatedAt } </td>
-                  </tr>
-                );
+                return <ListRow key={ list.id } list={ list } />
               })
             }
             </tbody>
@@ -40,3 +31,5 @@ class Lists extends Component {
     );
   }
 }
+
+export default Lists;
