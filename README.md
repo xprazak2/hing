@@ -1,5 +1,16 @@
 # Hing
 
+```js
+npm run dev
+```
+
+To seed and clear sample data:
+
+```js
+gulp sampleSeed
+gulp sampleClear
+```
+
 ## Tests
 to run all tests:
 ```js

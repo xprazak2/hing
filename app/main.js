@@ -1,11 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import Hing from './hing';
+import { Provider } from 'react-redux';
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
+import configureStore from './store';
 
-ReactDOM.render(<Router history={ browserHistory }>
-                  { routes }
-                </Router>,
+const store = configureStore();
+
+ReactDOM.render(<Provider store={ store }>
+                  <Router history={ browserHistory }>
+                    { routes }
+                  </Router>
+                </Provider>,
                 document.getElementById('hing')
 );

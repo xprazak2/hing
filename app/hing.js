@@ -3,10 +3,6 @@ import Navbar from './components/navbar';
 import styles from '../public/stylesheets/main.scss';
 
 class Hing extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <div>

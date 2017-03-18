@@ -9,4 +9,4 @@ export default (
     <Route path="/" component={ Home } />
     <Route path="/lists" component={ Lists } />
   </Route>
-)
+);
