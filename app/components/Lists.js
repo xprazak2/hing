@@ -40,15 +40,3 @@ class Lists extends Component {
     );
   }
 }
-
-let mapStateToProps = (state) => {
-  return state;
-}
-
-let mapDispatchToProps = (dispatch) => {
-  return {
-      fetchLists: bindActionCreators(fetchLists, dispatch)
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Lists);

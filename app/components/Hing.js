@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Navbar from './components/navbar';
-import styles from '../public/stylesheets/main.scss';
+import Navbar from './Navbar';
+import styles from '../../public/stylesheets/main.scss';
 
 class Hing extends Component {
   render() {
