@@ -6,7 +6,10 @@ class ListRow extends Component {
       <tr>
         <td> { this.props.list.name } </td>
         <td> { this.props.list.updatedAt } </td>
-        <td> Here will be an action </td>
+        <td>
+          <button className="ink-button">Edit</button>
+          <button className="ink-button">Destroy</button>
+        </td>
       </tr>
     );
   }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ListRow from './ListRow';
+import { Link } from 'react-router';
 
 class Lists extends Component {
   componentDidMount() {
@@ -9,8 +10,13 @@ class Lists extends Component {
 
   render() {
     return (
-      <div className="column-group">
-        <div >
+      <div>
+        <div className="column-group">
+          <div className="top-space">
+            <button className="ink-button push-right"><Link to="/lists/new">New</Link></button>
+          </div>
+        </div>
+        <div className="column-group">
           <table className="ink-table alternating">
             <thead>
               <tr>

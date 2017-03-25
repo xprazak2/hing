@@ -4,15 +4,27 @@ import axios from 'axios';
 const url = 'http://localhost:3000/api'
 
 export const GET_LISTS = 'GET_LISTS';
+export const POST_LIST = 'POST_LIST';
+
+const resultFrom = (data) => {
+  return data.hasOwnProperty('result') ? data.result : [];
+};
 
 const getLists = (data, errors, loading) => {
-  const result = data.hasOwnProperty('result') ? data.result : [];
   return {
     type: GET_LISTS,
-    lists: result,
+    lists: resultFrom(data),
     errors,
     loading
   };
+};
+
+const postList = (errors, loading) => {
+  return {
+    type: POST_LIST,
+    errors,
+    loading
+  }
 };
 
 export const fetchLists = () => {
@@ -21,9 +33,20 @@ export const fetchLists = () => {
 
     console.log('fetching lists, this can take time');
 
-    return axios.get(url + '/lists')
+    return axios.get(`${url}/lists`)
       .then(response => response.data)
       .then(json => dispatch(getLists(json, [], false)))
       .catch(json => dispatch(getLists([], json, false)));
+  }
+}
+
+export const createList = () => {
+  return (dispatch) => {
+    dispatch(postLists([], true));
+
+    return axios.post(`${url}/lists`)
+      .then(response => console.log(response))
+      .then(json => dispatch(postLists([], false)))
+      .catch(json => dispatch(postLists(json, false)));
   }
 }

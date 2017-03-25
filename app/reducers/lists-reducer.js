@@ -1,4 +1,5 @@
 import { GET_LISTS } from '../actions/lists-actions';
+import { POST_LIST } from '../actions/lists-actions';
 
 const initialListsState = {
   loading: false,
@@ -9,13 +10,18 @@ const initialListsState = {
 const listsReducer = (listsState = initialListsState, action) => {
   switch(action.type) {
     case GET_LISTS:
-      return Object.assign({}, initialListsState, {
+      return Object.assign({}, listsState, {
         loading: action.loading,
         lists: action.lists,
         errors: action.errors
       });
+    case POST_LIST:
+      return Object.assign({}, listsState, {
+        loading: action.loading,
+        errors: action.errors
+      });
     default:
-      return initialListsState;
+      return listsState;
   }
 };
 
