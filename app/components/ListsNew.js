@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 
 class ListsNew extends Component {
   render() {
@@ -12,7 +13,7 @@ class ListsNew extends Component {
             </div>
           </div>
           <button className="ink-button blue">Create</button>
-          <button className="ink-button">Cancel</button>
+          <button className="ink-button"><Link to="/lists">Cancel</Link></button>
         </div>
       </form>
     )

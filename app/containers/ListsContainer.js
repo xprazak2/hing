@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { fetchLists } from '../actions/lists-actions';
+import { getLists } from '../actions/lists-actions';
 import { bindActionCreators } from 'redux';
 import Lists from '../components/Lists';
 
@@ -9,7 +9,7 @@ let mapStateToProps = (state) => {
 
 let mapDispatchToProps = (dispatch) => {
   return {
-      fetchLists: bindActionCreators(fetchLists, dispatch)
+      getLists: bindActionCreators(getLists, dispatch)
   }
 }
 

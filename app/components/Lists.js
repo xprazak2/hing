@@ -4,8 +4,7 @@ import { Link } from 'react-router';
 
 class Lists extends Component {
   componentDidMount() {
-    // console.log(this.props)
-    this.props.fetchLists()
+    this.props.getLists()
   }
 
   render() {

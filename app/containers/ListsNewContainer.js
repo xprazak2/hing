@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { createList } from '../actions/lists-actions';
+import { postList } from '../actions/lists-actions';
 import { bindActionCreators } from 'redux';
 import ListsNew from '../components/ListsNew';
 
@@ -9,7 +9,7 @@ let mapStateToProps = state => {
 
 let mapDispatchToProps = dispatch => {
   return {
-    createList: bindActionCreators(createList, dispatch)
+    postList: bindActionCreators(postList, dispatch)
   }
 }
 
