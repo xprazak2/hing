@@ -19,10 +19,10 @@ const getListsAction = (data, errors, loading) => {
   };
 };
 
-const postListAction = (errors, loading) => {
+const postListAction = (list, loading) => {
   return {
     type: POST_LIST,
-    errors,
+    list,
     loading
   }
 };
@@ -46,7 +46,7 @@ export const postList = () => {
 
     return axios.post(`${url}/lists`)
       .then(response => console.log(response))
-      .then(json => dispatch(postListAction([], false)))
+      .then(json => dispatch(postListAction(json, false)))
       .catch(json => dispatch(postListAction(json, false)));
   }
 }
