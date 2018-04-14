@@ -28,7 +28,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: ['style-loader', 'css-loader?sourceMap', 'sass-loader?sourceMap']
+        loader: ['style-loader', 'css-loader?sourceMap']
         // maybe will be needed for production
         // loader: ExtractTextPlugin.extract('css-loader!sass-loader')
       }
