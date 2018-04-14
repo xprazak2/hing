@@ -20,13 +20,9 @@ app.use(bodyParser.json());
 // serve static files
 app.use(express.static('./dist'));
 
-// middleware logger goes before all routes!
-app.use(expressLogger);
-
 // webpack fragment
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from '../webpack.config.js';
 
 if (config.env === 'development') {
@@ -44,12 +40,10 @@ if (config.env === 'development') {
     //   modules: false
     // }
   }));
-
-  app.use(webpackHotMiddleware(compiler));
-} else {
-  // TODO: config for production
 }
-// webpack fragment end
+
+// middleware logger goes before all routes!
+app.use(expressLogger);
 
 // import and mount routes !!! All middleware goes BEFORE this !!!
 import listRoutes from './routes/list-routes';
@@ -62,7 +56,6 @@ app.use('/api/items', itemRoutes);
 app.use('/', function (req, res) {
     res.sendFile(path.resolve('./src/views/index.html'));
 });
-
 
 // error logger will be after routes and before any error handlers
 // app.use(expressErrorLogger);

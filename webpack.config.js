@@ -6,37 +6,56 @@ var webpack = require('webpack');
 // var htmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  devtool: 'inline-source-map',
-  entry: [
-    'webpack-hot-middleware/client?reload=true',
-    path.join(__dirname, 'app/main.js')
-  ],
+  mode: 'development',
+  entry: './app/elm.js',
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
-    publicPath: '/'
+    filename: 'bundle.js'
+    // publicPath: '/'
+  },
+  resolve: {
+    modules: [path.join(__dirname, "app"), "node_modules"],
+    extensions: [".js", ".elm", ".scss", ".png"]
   },
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.jsx?$/,
-        exclude: [/node_modules/],
-        loader: 'babel-loader',
-        query: {
-          "presets": ["react", "es2015", "react-hmre"]
+        test: /\.scss$/,
+        exclude: [/elm-stuff/, /node_modules/],
+        loader: ['style-loader', 'css-loader?sourceMap', 'sass-loader?sourceMap']
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
         }
       },
       {
-        test: /\.scss$/,
-        loader: ['style-loader', 'css-loader?sourceMap', 'sass-loader?sourceMap']
-        // maybe will be needed for production
-        // loader: ExtractTextPlugin.extract('css-loader!sass-loader')
+        test: /\.elm$/,
+        exclude: [/elm-stuff/, /node_modules/],
+        use: [
+          {
+            loader: 'elm-hot-loader'
+          },
+          {
+            loader: "elm-webpack-loader",
+            options: {
+              debug: true
+            }
+          }
+        ]
       }
     ]
   },
+  devServer: {
+    inline: true,
+    stats: "errors-only",
+    historyApiFallback: true
+  },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     // new ExtractTextPlugin({ filename: 'main.css', allChunks: true })
   ]
