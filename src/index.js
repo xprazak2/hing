@@ -12,11 +12,6 @@ let app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Set view path
-// app.set('views', path.join(__dirname, 'views'));
-// set up ejs for templating. You can use whatever
-// app.set('view engine', 'ejs');
-
 // serve static files
 app.use(express.static('./dist'));
 
@@ -42,13 +37,11 @@ if (config.env === 'development') {
   }));
 }
 
-// middleware logger goes before all routes!
 app.use(expressLogger);
 
 // import and mount routes !!! All middleware goes BEFORE this !!!
 import listRoutes from './routes/list-routes';
 import itemRoutes from './routes/item-routes';
-
 app.use('/api/lists', listRoutes);
 app.use('/api/items', itemRoutes);
 

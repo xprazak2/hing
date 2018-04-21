@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "NODE_ENV=test babel-tape-runner $npm_package_config_suite | faucet",
-    "dev": "nodemon --ignore app --ignore node_modules --exec babel-node src/index.js",
+    "dev": "nodemon --ignore node_modules --exec babel-node src/index.js",
     "webpack": "webpack-dev-server --hot --port 3009 --colors",
     "prestart": "babel src --out-dir dist",
     "start": "node dist/index.js",

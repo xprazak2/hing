@@ -1,13 +1,15 @@
 module Main exposing (main)
 
 import Html
-import App exposing (init, update, view)
+import Navigation
+import App exposing (init, update, view, Msg(LocationChanged), Model)
 
 
+main : Program Never Model Msg
 main =
-    Html.program
+    Navigation.program LocationChanged
         { init = init
         , update = update
         , view = view
-        , subscriptions = always Sub.none
+        , subscriptions = \_ -> Sub.none
         }
