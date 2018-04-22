@@ -11,18 +11,36 @@ parseLocation location =
             route
 
         Nothing ->
-            NotFoundRoute
+            NotFound
 
 
 matchRoute : Parser (Route -> a) a
 matchRoute =
     oneOf
-        [ map HomeRoute top
-        , map ListsRoute (s "lists")
+        [ map Home top
+        , map Inventories (s "lists")
         ]
 
 
+reverseRoute : Route -> String
+reverseRoute route =
+    case route of
+        Home ->
+            "/"
+
+        Inventories ->
+            "/inventories"
+
+        NotFound ->
+            "/notfound"
+
+
 type Route
-    = HomeRoute
-    | ListsRoute
-    | NotFoundRoute
+    = Home
+    | Inventories
+    | NotFound
+
+
+modifyUrl : Route -> Cmd Msg
+modifyUrl =
+    reverseRoute >> Navigation.modifyUrl

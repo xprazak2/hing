@@ -5,68 +5,116 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Events.Extra exposing (onClickPreventDefault)
 import Navigation exposing (Location)
-import Routing exposing (Route(..))
+import Routing exposing (Route)
 import Home.View as HomeView
-import List.View as ListView
+import Inventory.View as InventoryView
+import Inventory.Model exposing (Inventory, InventoryState, initInventory)
 
 
-type alias Model =
-    { currentRoute : Route
+type Page
+    = Home
+    | NotFound
+    | ErrorPage PageLoadError
+    | Inventories Inventory.Model
+
+
+type ActivePage
+    = Other
+    | Inventories
+
+
+type PageState
+    = Loaded Page
+    | TransitioningFrom Page
+
+
+type PageLoadError
+    = PageLoadError PageLoadErrorPayload
+
+
+pageLoadError : ActivePage -> String -> PageLoadError
+pageLoadError activePage string =
+    PageLoadError { activePage = activePage, errorMessage = string }
+
+
+type alias PageLoadErrorPayload =
+    { activePage : ActivePage
+    , errorMessage : String
     }
 
 
-initialModel : Route -> Model
-initialModel route =
-    { currentRoute = route }
+type alias Model =
+    { pageState : PageState
+    }
+
+
+initialPage : Page
+initialPage =
+    Home
 
 
 init : Location -> ( Model, Cmd Msg )
 init location =
+    setRoute (Routing.parseLocation location) { pageState = Loaded initialPage }
+
+
+getCurrentPage : PageState -> Page
+getCurrentPage pageState =
+    case pageState of
+        Loaded page ->
+            page
+
+        TransitioningFrom page ->
+            page
+
+
+pageErrored : Model -> ActivePage -> String -> ( Model, Cmd Msg )
+pageErrored model activePage errorMsg =
     let
-        currentRoute =
-            Routing.parseLocation location
+        error =
+            pageLoadError activePage errorMsg
     in
-        ( initialModel currentRoute, Cmd.none )
+        ( { model | pageState = Loaded (ErrorPage error) }, Cmd.none )
+
+
+setRoute : Route -> Model -> ( Model, Cmd Msg )
+setRoute route model =
+    let
+        transition toMsg task =
+            ( { model | pageState = TransitioningFrom (getCurrentPage model.pageState) }, Task.attempt toMsg task )
+
+        errored =
+            pageErrored model
+    in
+        case route of
+            Route.NotFound ->
+                ( { model | pageState = Loaded NotFound }, Cmd.none )
+
+            Route.Home ->
+                ( model, Routing.modifyUrl Route.Home )
 
 
 type Msg
-    = None
-    | LocationChanged Location
+    = LocationChanged Location
     | NavigateTo Route
     | HomeMsg HomeView.Msg
-    | ListMsg ListView.Msg
+    | InventoryMsg InventoryView.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        None ->
-            ( model, Cmd.none )
-
         LocationChanged location ->
             ( { model | currentRoute = Routing.parseLocation location }, Cmd.none )
 
         NavigateTo route ->
-            ( model, Navigation.newUrl (reverseRoute route) )
+            ( model, Navigation.newUrl (Routing.reverseRoute route) )
 
         HomeMsg _ ->
             ( model, Cmd.none )
 
-        ListMsg _ ->
+        InventoryMsg _ ->
             ( model, Cmd.none )
-
-
-reverseRoute : Route -> String
-reverseRoute route =
-    case route of
-        HomeRoute ->
-            "/"
-
-        ListsRoute ->
-            "/lists"
-
-        NotFoundRoute ->
-            "/notfound"
 
 
 view : Model -> Html Msg
@@ -74,15 +122,6 @@ view model =
     div []
         [ navbar
         , showPage model
-
-        --, h1 []
-        --    [ text "Elm Webpack Starter, featuring hot-loading" ]
-        --, p [] [ text "Click on the button below to increment the state." ]
-        --, p [] [ text "Then make a change to the source code and see how the state is retained after you recompile." ]
-        --, p []
-        --    [ text "And now don't forget to add a star to the Github repo "
-        --    , a [ href "https://github.com/simonh1000/elm-webpack-starter" ] [ text "elm-webpack-starter" ]
-        --    ]
         ]
 
 
@@ -93,7 +132,7 @@ showPage model =
             Html.map HomeMsg HomeView.view
 
         ListsRoute ->
-            Html.map ListMsg ListView.view
+            Html.map InventoryMsg InventoryView.view
 
         NotFoundRoute ->
             div [] [ text "NotFound!" ]
@@ -106,12 +145,12 @@ navbar =
             [ li []
                 [ viewLink HomeRoute "Home" ]
             , li []
-                [ viewLink ListsRoute "Lists" ]
+                [ viewLink ListsRoute "Inventories" ]
             ]
         ]
 
 
 viewLink : Route -> String -> Html Msg
 viewLink route name =
-    a [ href (reverseRoute route), onClickPreventDefault (NavigateTo route) ]
+    a [ href (Routing.reverseRoute route), onClickPreventDefault (NavigateTo route) ]
         [ text name ]
