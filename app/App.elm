@@ -73,7 +73,8 @@ setRoute route model =
     let
         transition toMsg task =
             ( { model | pageState = TransitioningFrom (getCurrentPage model.pageState) }
-            , Task.attempt toMsg task
+            , Cmd.batch
+                [ Task.attempt toMsg task ]
             )
 
         errored =
@@ -84,7 +85,7 @@ setRoute route model =
                 ( { model | pageState = Loaded NotFoundPage }, Cmd.none )
 
             Routing.Home ->
-                ( { model | pageState = Loaded (HomePage "Placeholder") }, Routing.modifyUrl Home )
+                ( { model | pageState = Loaded (HomePage "Placeholder") }, Cmd.none )
 
             Routing.Inventories ->
                 transition InventoriesLoaded Inventory.Model.init
@@ -148,9 +149,9 @@ view model =
 viewPage : Bool -> Page -> Html Msg
 viewPage loading page =
     if loading then
-        viewLoadedPage page
-    else
         viewLoadingPage page
+    else
+        viewLoadedPage page
 
 
 viewLoadingPage : Page -> Html Msg

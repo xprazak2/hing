@@ -18,7 +18,7 @@ matchRoute : Parser (Route -> a) a
 matchRoute =
     oneOf
         [ map Home top
-        , map Inventories (s "lists")
+        , map Inventories (s "inventories")
         ]
 
 
@@ -44,3 +44,8 @@ type Route
 modifyUrl : Route -> Cmd msg
 modifyUrl =
     reverseRoute >> Navigation.modifyUrl
+
+
+setUrl : Route -> Cmd msg
+setUrl route =
+    Navigation.newUrl (reverseRoute route)
