@@ -41,6 +41,6 @@ type Route
     | NotFound
 
 
-modifyUrl : Route -> Cmd Msg
+modifyUrl : Route -> Cmd msg
 modifyUrl =
     reverseRoute >> Navigation.modifyUrl

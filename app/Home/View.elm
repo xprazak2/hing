@@ -1,10 +1,7 @@
 module Home.View exposing (..)
 
 import Html exposing (..)
-
-
-type Msg
-    = None
+import Home.Model exposing (Msg(..))
 
 
 view : Html Msg

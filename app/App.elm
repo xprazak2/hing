@@ -5,42 +5,33 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Events.Extra exposing (onClickPreventDefault)
 import Navigation exposing (Location)
-import Routing exposing (Route)
+import Task
+import Routing exposing (Route(..))
+import Page exposing (PageLoadError(..), pageLoadError, ActivePage(..))
 import Home.View as HomeView
+import Home.Model
 import Inventory.View as InventoryView
-import Inventory.Model exposing (Inventory, InventoryState, initInventory)
+import Inventory.Model exposing (Inventory, Inventories)
 
 
 type Page
-    = Home
-    | NotFound
+    = HomePage Home.Model.HomeModel
+    | NotFoundPage
     | ErrorPage PageLoadError
-    | Inventories Inventory.Model
+    | InventoriesPage Inventory.Model.Inventories
 
 
-type ActivePage
-    = Other
-    | Inventories
+pageFrame : ActivePage -> Html Msg -> Html Msg
+pageFrame activePage content =
+    div []
+        [ navbar
+        , content
+        ]
 
 
 type PageState
     = Loaded Page
     | TransitioningFrom Page
-
-
-type PageLoadError
-    = PageLoadError PageLoadErrorPayload
-
-
-pageLoadError : ActivePage -> String -> PageLoadError
-pageLoadError activePage string =
-    PageLoadError { activePage = activePage, errorMessage = string }
-
-
-type alias PageLoadErrorPayload =
-    { activePage : ActivePage
-    , errorMessage : String
-    }
 
 
 type alias Model =
@@ -50,7 +41,7 @@ type alias Model =
 
 initialPage : Page
 initialPage =
-    Home
+    HomePage "Welcome home"
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -81,61 +72,120 @@ setRoute : Route -> Model -> ( Model, Cmd Msg )
 setRoute route model =
     let
         transition toMsg task =
-            ( { model | pageState = TransitioningFrom (getCurrentPage model.pageState) }, Task.attempt toMsg task )
+            ( { model | pageState = TransitioningFrom (getCurrentPage model.pageState) }
+            , Task.attempt toMsg task
+            )
 
         errored =
             pageErrored model
     in
         case route of
-            Route.NotFound ->
-                ( { model | pageState = Loaded NotFound }, Cmd.none )
+            Routing.NotFound ->
+                ( { model | pageState = Loaded NotFoundPage }, Cmd.none )
 
-            Route.Home ->
-                ( model, Routing.modifyUrl Route.Home )
+            Routing.Home ->
+                ( { model | pageState = Loaded (HomePage "Placeholder") }, Routing.modifyUrl Home )
+
+            Routing.Inventories ->
+                transition InventoriesLoaded Inventory.Model.init
 
 
 type Msg
-    = LocationChanged Location
-    | NavigateTo Route
-    | HomeMsg HomeView.Msg
-    | InventoryMsg InventoryView.Msg
+    = SetRoute Route
+    | HomeMsg Home.Model.Msg
+    | InventoryMsg Inventory.Model.Msg
+    | InventoriesLoaded (Result PageLoadError Inventories)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update message model =
-    case message of
-        LocationChanged location ->
-            ( { model | currentRoute = Routing.parseLocation location }, Cmd.none )
+update msg model =
+    updatePage (getCurrentPage model.pageState) msg model
 
-        NavigateTo route ->
-            ( model, Navigation.newUrl (Routing.reverseRoute route) )
 
-        HomeMsg _ ->
-            ( model, Cmd.none )
+updatePage : Page -> Msg -> Model -> ( Model, Cmd Msg )
+updatePage page msg model =
+    let
+        toPage toModel toMsg subUpdate subMsg subModel =
+            let
+                ( newModel, newCmd ) =
+                    subUpdate subMsg subModel
+            in
+                ( { model | pageState = Loaded (toModel newModel) }, Cmd.map toMsg newCmd )
+    in
+        case ( msg, page ) of
+            ( SetRoute route, _ ) ->
+                setRoute route model
 
-        InventoryMsg _ ->
-            ( model, Cmd.none )
+            ( InventoriesLoaded (Ok subModel), _ ) ->
+                ( { model | pageState = Loaded (InventoriesPage subModel) }, Cmd.none )
+
+            ( InventoriesLoaded (Err error), _ ) ->
+                ( { model | pageState = Loaded (ErrorPage error) }, Cmd.none )
+
+            ( HomeMsg subMsg, HomePage subModel ) ->
+                toPage HomePage HomeMsg Home.Model.update subMsg subModel
+
+            ( InventoryMsg subMsg, InventoriesPage subModel ) ->
+                toPage InventoriesPage InventoryMsg Inventory.Model.update subMsg subModel
+
+            ( _, NotFoundPage ) ->
+                ( model, Cmd.none )
+
+            ( _, _ ) ->
+                ( model, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
+    case model.pageState of
+        Loaded page ->
+            viewPage False page
+
+        TransitioningFrom page ->
+            viewPage True page
+
+
+viewPage : Bool -> Page -> Html Msg
+viewPage loading page =
+    if loading then
+        viewLoadedPage page
+    else
+        viewLoadingPage page
+
+
+viewLoadingPage : Page -> Html Msg
+viewLoadingPage page =
     div []
-        [ navbar
-        , showPage model
-        ]
+        [ text "Loading" ]
 
 
-showPage : Model -> Html Msg
-showPage model =
-    case model.currentRoute of
-        HomeRoute ->
-            Html.map HomeMsg HomeView.view
+viewLoadedPage : Page -> Html Msg
+viewLoadedPage page =
+    case page of
+        NotFoundPage ->
+            pageFrame Page.OtherPageActive notFoundView
 
-        ListsRoute ->
-            Html.map InventoryMsg InventoryView.view
+        ErrorPage loadError ->
+            pageFrame Page.OtherPageActive (loadErrorView loadError)
 
-        NotFoundRoute ->
-            div [] [ text "NotFound!" ]
+        HomePage _ ->
+            HomeView.view |> Html.map HomeMsg |> pageFrame Page.OtherPageActive
+
+        InventoriesPage _ ->
+            InventoryView.view |> Html.map InventoryMsg |> pageFrame Page.InventoriesPageActive
+
+
+notFoundView : Html Msg
+notFoundView =
+    div []
+        [ text "Not Found" ]
+
+
+loadErrorView : PageLoadError -> Html Msg
+loadErrorView loadError =
+    case loadError of
+        PageLoadError payload ->
+            div [] [ text payload.errorMessage ]
 
 
 navbar : Html Msg
@@ -143,14 +193,14 @@ navbar =
     nav [ class "ink-navigation" ]
         [ ul [ class "menu horizontal blue" ]
             [ li []
-                [ viewLink HomeRoute "Home" ]
+                [ viewLink Routing.Home "Home" ]
             , li []
-                [ viewLink ListsRoute "Inventories" ]
+                [ viewLink Routing.Inventories "Inventories" ]
             ]
         ]
 
 
 viewLink : Route -> String -> Html Msg
 viewLink route name =
-    a [ href (Routing.reverseRoute route), onClickPreventDefault (NavigateTo route) ]
+    a [ href (Routing.reverseRoute route), onClickPreventDefault (SetRoute route) ]
         [ text name ]

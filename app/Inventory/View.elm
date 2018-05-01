@@ -1,10 +1,8 @@
-module List.View exposing (..)
+module Inventory.View exposing (..)
 
 import Html exposing (..)
-
-
-type Msg
-    = None
+import Html.Attributes exposing (..)
+import Inventory.Model exposing (Msg(..))
 
 
 view : Html Msg

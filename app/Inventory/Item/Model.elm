@@ -1,4 +1,6 @@
-module Model exposing (Item)
+module Inventory.Item.Model exposing (Item)
+
+import Date exposing (Date)
 
 
 type alias Item =
