@@ -7,7 +7,7 @@ import Html.Events.Extra exposing (onClickPreventDefault)
 import Navigation exposing (Location)
 import Routing exposing (Route(..))
 import Home.View as HomeView
-import List.View as ListView
+import Inventory.View as InventoryView
 
 
 type alias Model =
@@ -34,7 +34,7 @@ type Msg
     | LocationChanged Location
     | NavigateTo Route
     | HomeMsg HomeView.Msg
-    | ListMsg ListView.Msg
+    | InventoryMsg InventoryView.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,7 +52,7 @@ update message model =
         HomeMsg _ ->
             ( model, Cmd.none )
 
-        ListMsg _ ->
+        InventoryMsg _ ->
             ( model, Cmd.none )
 
 
@@ -62,8 +62,8 @@ reverseRoute route =
         HomeRoute ->
             "/"
 
-        ListsRoute ->
-            "/lists"
+        InventoriesRoute ->
+            "/inventories"
 
         NotFoundRoute ->
             "/notfound"
@@ -74,15 +74,6 @@ view model =
     div []
         [ navbar
         , showPage model
-
-        --, h1 []
-        --    [ text "Elm Webpack Starter, featuring hot-loading" ]
-        --, p [] [ text "Click on the button below to increment the state." ]
-        --, p [] [ text "Then make a change to the source code and see how the state is retained after you recompile." ]
-        --, p []
-        --    [ text "And now don't forget to add a star to the Github repo "
-        --    , a [ href "https://github.com/simonh1000/elm-webpack-starter" ] [ text "elm-webpack-starter" ]
-        --    ]
         ]
 
 
@@ -92,8 +83,8 @@ showPage model =
         HomeRoute ->
             Html.map HomeMsg HomeView.view
 
-        ListsRoute ->
-            Html.map ListMsg ListView.view
+        InventoriesRoute ->
+            Html.map InventoryMsg InventoryView.view
 
         NotFoundRoute ->
             div [] [ text "NotFound!" ]
@@ -106,7 +97,7 @@ navbar =
             [ li []
                 [ viewLink HomeRoute "Home" ]
             , li []
-                [ viewLink ListsRoute "Lists" ]
+                [ viewLink InventoriesRoute "Inventories" ]
             ]
         ]
 

@@ -18,11 +18,11 @@ matchRoute : Parser (Route -> a) a
 matchRoute =
     oneOf
         [ map HomeRoute top
-        , map ListsRoute (s "lists")
+        , map InventoriesRoute (s "inventories")
         ]
 
 
 type Route
     = HomeRoute
-    | ListsRoute
+    | InventoriesRoute
     | NotFoundRoute
