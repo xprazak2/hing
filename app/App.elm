@@ -7,17 +7,41 @@ import Html.Events.Extra exposing (onClickPreventDefault)
 import Navigation exposing (Location)
 import Routing exposing (Route(..))
 import Home.View as HomeView
+import Home.Model
 import Inventory.View as InventoryView
+import Inventory.Model exposing (Inventory, Inventories)
+
+
+type PageState
+    = Loaded Page
+    | TransitioningFrom Page
+
+
+type Page
+    = HomePage
+    | InventoriesPage
+
+
+
+--type alias PageAttrs pageModel =
+--    { route : Route
+--    , model : PageModel pageModel
+--    , urlCreator : Page -> String
+--    }
+--HomePage { route = HomeRoute, model = "", urlCreator = \_ -> "/" }
 
 
 type alias Model =
     { currentRoute : Route
+    , pageState : PageState
     }
 
 
 initialModel : Route -> Model
 initialModel route =
-    { currentRoute = route }
+    { currentRoute = route
+    , pageState = Loaded HomePage
+    }
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -30,43 +54,31 @@ init location =
 
 
 type Msg
-    = None
-    | LocationChanged Location
+    = RouteChanged Route
     | NavigateTo Route
     | HomeMsg HomeView.Msg
     | InventoryMsg InventoryView.Msg
 
 
+setRoute : Route -> Model -> ( Model, Cmd Msg )
+setRoute route model =
+    ( model, Cmd.none )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        None ->
-            ( model, Cmd.none )
-
-        LocationChanged location ->
-            ( { model | currentRoute = Routing.parseLocation location }, Cmd.none )
+        RouteChanged route ->
+            ( { model | currentRoute = route }, Cmd.none )
 
         NavigateTo route ->
-            ( model, Navigation.newUrl (reverseRoute route) )
+            ( model, Navigation.newUrl (Routing.reverseRoute route) )
 
         HomeMsg _ ->
             ( model, Cmd.none )
 
         InventoryMsg _ ->
             ( model, Cmd.none )
-
-
-reverseRoute : Route -> String
-reverseRoute route =
-    case route of
-        HomeRoute ->
-            "/"
-
-        InventoriesRoute ->
-            "/inventories"
-
-        NotFoundRoute ->
-            "/notfound"
 
 
 view : Model -> Html Msg
@@ -104,5 +116,5 @@ navbar =
 
 viewLink : Route -> String -> Html Msg
 viewLink route name =
-    a [ href (reverseRoute route), onClickPreventDefault (NavigateTo route) ]
+    a [ href (Routing.reverseRoute route), onClickPreventDefault (NavigateTo route) ]
         [ text name ]

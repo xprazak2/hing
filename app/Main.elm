@@ -2,12 +2,13 @@ module Main exposing (main)
 
 import Html
 import Navigation
-import App exposing (init, update, view, Msg(LocationChanged), Model)
+import App exposing (init, update, view, Msg(RouteChanged), Model)
+import Routing
 
 
 main : Program Never Model Msg
 main =
-    Navigation.program LocationChanged
+    Navigation.program (Routing.parseLocation >> RouteChanged)
         { init = init
         , update = update
         , view = view

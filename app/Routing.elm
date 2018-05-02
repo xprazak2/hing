@@ -22,6 +22,19 @@ matchRoute =
         ]
 
 
+reverseRoute : Route -> String
+reverseRoute route =
+    case route of
+        HomeRoute ->
+            "/"
+
+        InventoriesRoute ->
+            "/inventories"
+
+        NotFoundRoute ->
+            "/notfound"
+
+
 type Route
     = HomeRoute
     | InventoriesRoute
