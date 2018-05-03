@@ -10,6 +10,9 @@ import Home.View as HomeView
 import Home.Model
 import Inventory.View as InventoryView
 import Inventory.Model exposing (Inventory, Inventories)
+import Task exposing (Task)
+import Debug
+import PageError exposing (PageLoadError(..))
 
 
 type PageState
@@ -18,29 +21,20 @@ type PageState
 
 
 type Page
-    = HomePage
+    = NotFoundPage
+    | ErrorPage PageLoadError
+    | HomePage
     | InventoriesPage
 
 
-
---type alias PageAttrs pageModel =
---    { route : Route
---    , model : PageModel pageModel
---    , urlCreator : Page -> String
---    }
---HomePage { route = HomeRoute, model = "", urlCreator = \_ -> "/" }
-
-
 type alias Model =
-    { currentRoute : Route
-    , pageState : PageState
+    { pageState : PageState
     }
 
 
 initialModel : Route -> Model
 initialModel route =
-    { currentRoute = route
-    , pageState = Loaded HomePage
+    { pageState = Loaded HomePage
     }
 
 
@@ -50,7 +44,7 @@ init location =
         currentRoute =
             Routing.parseLocation location
     in
-        ( initialModel currentRoute, Cmd.none )
+        routeChanged currentRoute (initialModel currentRoute)
 
 
 type Msg
@@ -58,18 +52,39 @@ type Msg
     | NavigateTo Route
     | HomeMsg HomeView.Msg
     | InventoryMsg InventoryView.Msg
+    | InventoriesPageLoaded (Result PageLoadError Inventories)
 
 
-setRoute : Route -> Model -> ( Model, Cmd Msg )
-setRoute route model =
-    ( model, Cmd.none )
+routeChanged : Route -> Model -> ( Model, Cmd Msg )
+routeChanged route model =
+    case route of
+        HomeRoute ->
+            ( { model | pageState = Loaded HomePage }, Cmd.none )
+
+        InventoriesRoute ->
+            ( { model | pageState = TransitioningFrom (getCurrentPage model.pageState) }
+            , Task.attempt InventoriesPageLoaded Inventory.Model.load
+            )
+
+        NotFoundRoute ->
+            ( { model | pageState = Loaded NotFoundPage }, Cmd.none )
+
+
+getCurrentPage : PageState -> Page
+getCurrentPage pageState =
+    case pageState of
+        Loaded page ->
+            page
+
+        TransitioningFrom page ->
+            page
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         RouteChanged route ->
-            ( { model | currentRoute = route }, Cmd.none )
+            routeChanged route model
 
         NavigateTo route ->
             ( model, Navigation.newUrl (Routing.reverseRoute route) )
@@ -80,26 +95,50 @@ update message model =
         InventoryMsg _ ->
             ( model, Cmd.none )
 
+        InventoriesPageLoaded (Ok inventories) ->
+            ( { model | pageState = Loaded (InventoriesPage) }, Cmd.none )
+
+        InventoriesPageLoaded (Err error) ->
+            ( { model | pageState = Loaded (ErrorPage error) }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
     div []
         [ navbar
-        , showPage model
+        , viewPage model
         ]
 
 
-showPage : Model -> Html Msg
-showPage model =
-    case model.currentRoute of
-        HomeRoute ->
+viewPage : Model -> Html Msg
+viewPage model =
+    case model.pageState of
+        Loaded page ->
+            showPage page
+
+        TransitioningFrom page ->
+            showSpinner
+
+
+showSpinner : Html Msg
+showSpinner =
+    div [] [ text "Loading..." ]
+
+
+showPage : Page -> Html Msg
+showPage page =
+    case page of
+        NotFoundPage ->
+            div [] [ text "NotFound!" ]
+
+        HomePage ->
             Html.map HomeMsg HomeView.view
 
-        InventoriesRoute ->
+        InventoriesPage ->
             Html.map InventoryMsg InventoryView.view
 
-        NotFoundRoute ->
-            div [] [ text "NotFound!" ]
+        ErrorPage loadError ->
+            div [] [ text (PageError.pageLoadErrorToString loadError) ]
 
 
 navbar : Html Msg
