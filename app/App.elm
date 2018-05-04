@@ -15,6 +15,9 @@ import Debug
 import PageError exposing (PageLoadError(..))
 
 
+--import Http
+
+
 type PageState
     = Loaded Page
     | TransitioningFrom Page
@@ -24,7 +27,7 @@ type Page
     = NotFoundPage
     | ErrorPage PageLoadError
     | HomePage
-    | InventoriesPage
+    | InventoriesPage Inventories
 
 
 type alias Model =
@@ -96,7 +99,7 @@ update message model =
             ( model, Cmd.none )
 
         InventoriesPageLoaded (Ok inventories) ->
-            ( { model | pageState = Loaded (InventoriesPage) }, Cmd.none )
+            ( { model | pageState = Loaded (InventoriesPage inventories) }, Cmd.none )
 
         InventoriesPageLoaded (Err error) ->
             ( { model | pageState = Loaded (ErrorPage error) }, Cmd.none )
@@ -106,7 +109,8 @@ view : Model -> Html Msg
 view model =
     div []
         [ navbar
-        , viewPage model
+        , div [ class "ink-grid" ]
+            [ viewPage model ]
         ]
 
 
@@ -134,8 +138,8 @@ showPage page =
         HomePage ->
             Html.map HomeMsg HomeView.view
 
-        InventoriesPage ->
-            Html.map InventoryMsg InventoryView.view
+        InventoriesPage inventories ->
+            Html.map InventoryMsg (InventoryView.view inventories)
 
         ErrorPage loadError ->
             div [] [ text (PageError.pageLoadErrorToString loadError) ]
