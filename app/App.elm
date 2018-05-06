@@ -8,33 +8,39 @@ import Navigation exposing (Location)
 import Routing exposing (Route(..))
 import Home.View as HomeView
 import Inventory.View as InventoryView
+import Home.Msg
+import Inventory.Msg
 
 
 type alias Model =
     { currentRoute : Route
+    , location : Location
+    , state : State
     }
 
 
-initialModel : Route -> Model
-initialModel route =
-    { currentRoute = route }
+type State
+    = NotReady
+    | Ready Routing.Model
 
 
 init : Location -> ( Model, Cmd Msg )
 init location =
-    let
-        currentRoute =
-            Routing.parseLocation location
-    in
-        ( initialModel currentRoute, Cmd.none )
+    ( { state = NotReady
+      , location = location
+      , currentRoute = Routing.parseLocation location
+      }
+    , Cmd.none
+    )
 
 
 type Msg
     = None
     | LocationChanged Location
     | NavigateTo Route
-    | HomeMsg HomeView.Msg
-    | InventoryMsg InventoryView.Msg
+    | HomeMsg Home.Msg.Msg
+    | InventoryMsg Inventory.Msg.Msg
+    | RouterMsg Routing.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -53,6 +59,9 @@ update message model =
             ( model, Cmd.none )
 
         InventoryMsg _ ->
+            ( model, Cmd.none )
+
+        RouterMsg _ ->
             ( model, Cmd.none )
 
 

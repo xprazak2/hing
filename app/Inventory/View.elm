@@ -1,10 +1,7 @@
 module Inventory.View exposing (..)
 
 import Html exposing (..)
-
-
-type Msg
-    = None
+import Inventory.Msg exposing (Msg(..))
 
 
 view : Html Msg
