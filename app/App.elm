@@ -1,28 +1,16 @@
 module App exposing (..)
 
 import Html exposing (Html)
-
-
---import Html.Attributes exposing (..)
---import Html.Events exposing (..)
---import Html.Events.Extra exposing (onClickPreventDefault)
-
+import Task exposing (Task)
 import Navigation exposing (Location)
 import Routing.Router as Router exposing (..)
 import Routing.Model exposing (Route(..))
-import Routing.Msg
+import Routing.Msg exposing (Msg(LocationChanged))
 import Routing.View
 
 
---import Home.View as HomeView
---import Inventory.View as InventoryView
---import Home.Msg
---import Inventory.Msg
-
-
 type alias Model =
-    { currentRoute : Route
-    , location : Location
+    { location : Location
     , state : State
     }
 
@@ -36,15 +24,14 @@ init : Location -> ( Model, Cmd Msg )
 init location =
     ( { state = NotReady
       , location = location
-      , currentRoute = Router.parseLocation location
       }
-    , Cmd.none
+    , Task.perform ApplicationLoad (Task.succeed location)
     )
 
 
 type Msg
     = LocationChanged Location
-    | NavigateTo Route
+    | ApplicationLoad Location
     | RoutingMsg Routing.Msg.Msg
 
 
@@ -52,13 +39,17 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         LocationChanged location ->
-            ( { model | currentRoute = Router.parseLocation location }, Cmd.none )
+            routerUpdate { model | location = location } (Routing.Msg.LocationChanged location)
 
-        NavigateTo route ->
-            ( model, Navigation.newUrl (Routing.Model.reverseRoute route) )
+        ApplicationLoad location ->
+            let
+                ( newState, cmd ) =
+                    Router.init location
+            in
+                ( { model | state = Ready newState }, Cmd.map RoutingMsg cmd )
 
-        RoutingMsg _ ->
-            ( model, Cmd.none )
+        RoutingMsg routingMsg ->
+            routerUpdate model routingMsg
 
 
 routerUpdate : Model -> Routing.Msg.Msg -> ( Model, Cmd Msg )
