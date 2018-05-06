@@ -26,6 +26,11 @@ init =
     ( { inventories = [ Inventory "57a6s" "First Inventory" (dateFromString "2011/6/4") (dateFromString "2011/6/4") ] }, Cmd.none )
 
 
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    ( model, Cmd.none )
+
+
 dateFromString : String -> Date
 dateFromString string =
     Date.fromString string |> Result.withDefault (Date.fromTime 0)

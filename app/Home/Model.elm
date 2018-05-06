@@ -10,3 +10,8 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( "Initial value", Cmd.none )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    ( model, Cmd.none )

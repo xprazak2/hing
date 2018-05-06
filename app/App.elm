@@ -1,15 +1,23 @@
 module App exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Html.Events.Extra exposing (onClickPreventDefault)
+import Html exposing (Html)
+
+
+--import Html.Attributes exposing (..)
+--import Html.Events exposing (..)
+--import Html.Events.Extra exposing (onClickPreventDefault)
+
 import Navigation exposing (Location)
-import Routing exposing (Route(..))
-import Home.View as HomeView
-import Inventory.View as InventoryView
-import Home.Msg
-import Inventory.Msg
+import Routing.Router as Router exposing (..)
+import Routing.Model exposing (Route(..))
+import Routing.Msg
+import Routing.View
+
+
+--import Home.View as HomeView
+--import Inventory.View as InventoryView
+--import Home.Msg
+--import Inventory.Msg
 
 
 type alias Model =
@@ -21,97 +29,58 @@ type alias Model =
 
 type State
     = NotReady
-    | Ready Routing.Model
+    | Ready Routing.Model.Model
 
 
 init : Location -> ( Model, Cmd Msg )
 init location =
     ( { state = NotReady
       , location = location
-      , currentRoute = Routing.parseLocation location
+      , currentRoute = Router.parseLocation location
       }
     , Cmd.none
     )
 
 
 type Msg
-    = None
-    | LocationChanged Location
+    = LocationChanged Location
     | NavigateTo Route
-    | HomeMsg Home.Msg.Msg
-    | InventoryMsg Inventory.Msg.Msg
-    | RouterMsg Routing.Msg
+    | RoutingMsg Routing.Msg.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        None ->
-            ( model, Cmd.none )
-
         LocationChanged location ->
-            ( { model | currentRoute = Routing.parseLocation location }, Cmd.none )
+            ( { model | currentRoute = Router.parseLocation location }, Cmd.none )
 
         NavigateTo route ->
-            ( model, Navigation.newUrl (reverseRoute route) )
+            ( model, Navigation.newUrl (Routing.Model.reverseRoute route) )
 
-        HomeMsg _ ->
-            ( model, Cmd.none )
-
-        InventoryMsg _ ->
-            ( model, Cmd.none )
-
-        RouterMsg _ ->
+        RoutingMsg _ ->
             ( model, Cmd.none )
 
 
-reverseRoute : Route -> String
-reverseRoute route =
-    case route of
-        HomeRoute ->
-            "/"
+routerUpdate : Model -> Routing.Msg.Msg -> ( Model, Cmd Msg )
+routerUpdate model routingMsg =
+    case model.state of
+        Ready routingModel ->
+            let
+                ( newRoutingModel, routingCmd ) =
+                    Router.update routingMsg routingModel
+            in
+                ( { model | state = Ready newRoutingModel }, Cmd.map RoutingMsg routingCmd )
 
-        InventoriesRoute ->
-            "/inventories"
-
-        NotFoundRoute ->
-            "/notfound"
+        NotReady ->
+            Debug.crash "Ooops. We got a sub-component message even though it wasn't supposed to be initialized?!?!?"
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ navbar
-        , showPage model
-        ]
+    case model.state of
+        Ready routerModel ->
+            Routing.View.view routerModel
+                |> Html.map RoutingMsg
 
-
-showPage : Model -> Html Msg
-showPage model =
-    case model.currentRoute of
-        HomeRoute ->
-            Html.map HomeMsg HomeView.view
-
-        InventoriesRoute ->
-            Html.map InventoryMsg InventoryView.view
-
-        NotFoundRoute ->
-            div [] [ text "NotFound!" ]
-
-
-navbar : Html Msg
-navbar =
-    nav [ class "ink-navigation" ]
-        [ ul [ class "menu horizontal blue" ]
-            [ li []
-                [ viewLink HomeRoute "Home" ]
-            , li []
-                [ viewLink InventoriesRoute "Inventories" ]
-            ]
-        ]
-
-
-viewLink : Route -> String -> Html Msg
-viewLink route name =
-    a [ href (reverseRoute route), onClickPreventDefault (NavigateTo route) ]
-        [ text name ]
+        NotReady ->
+            Html.text "Loading"
