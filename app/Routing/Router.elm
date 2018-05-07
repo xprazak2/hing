@@ -25,13 +25,29 @@ init location =
 
         ( inventoryModel, inventoryCmd ) =
             Inventory.Model.init
+
+        currentRoute =
+            parseLocation location
     in
         ( { homeModel = homeModel
           , inventoryModel = inventoryModel
-          , route = parseLocation location
+          , route = currentRoute
           }
-        , Cmd.none
+        , initCmd currentRoute
         )
+
+
+initCmd : Route -> Cmd Msg
+initCmd route =
+    case route of
+        HomeRoute ->
+            Cmd.none
+
+        InventoriesRoute ->
+            Cmd.none
+
+        NotFoundRoute ->
+            Cmd.none
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

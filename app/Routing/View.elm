@@ -14,7 +14,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ navbar
-        , showPage model
+        , div [ class "ink-grid" ] [ showPage model ]
         ]
 
 
@@ -25,7 +25,7 @@ showPage model =
             Html.map HomeMsg Home.View.view
 
         InventoriesRoute ->
-            Html.map InventoryMsg Inventory.View.view
+            Html.map InventoryMsg (Inventory.View.view model.inventoryModel.inventories)
 
         NotFoundRoute ->
             div [] [ text "NotFound!" ]
