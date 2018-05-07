@@ -5,9 +5,12 @@ import UrlParser exposing (oneOf, s, (</>), map, top, parsePath, Parser, parseHa
 import Routing.Model exposing (Model, Route(..), reverseRoute)
 import Routing.Msg exposing (Msg(..))
 import Home.Model
-import Home.Msg
 import Inventory.Model
-import Inventory.Msg
+
+
+--import Inventory.Msg
+
+import Inventory.Init
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -51,7 +54,7 @@ initInventory : Model -> ( Model, Cmd Msg )
 initInventory model =
     let
         ( newInventoryModel, inventoryCmd ) =
-            Inventory.Model.init
+            Inventory.Init.init
     in
         ( { model | inventoryModel = newInventoryModel }, Cmd.map InventoryMsg inventoryCmd )
 
@@ -79,7 +82,7 @@ update msg model =
             updateInventory model inventoryMsg
 
 
-updateHome : Model -> Home.Msg.Msg -> ( Model, Cmd Msg )
+updateHome : Model -> Home.Model.Msg -> ( Model, Cmd Msg )
 updateHome model homeMsg =
     let
         ( newHomeModel, homeCmd ) =
@@ -88,7 +91,7 @@ updateHome model homeMsg =
         ( { model | homeModel = newHomeModel }, Cmd.map HomeMsg homeCmd )
 
 
-updateInventory : Model -> Inventory.Msg.Msg -> ( Model, Cmd Msg )
+updateInventory : Model -> Inventory.Model.Msg -> ( Model, Cmd Msg )
 updateInventory model inventoryMsg =
     let
         ( newInventoryModel, inventoryCmd ) =

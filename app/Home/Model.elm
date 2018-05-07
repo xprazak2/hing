@@ -1,10 +1,12 @@
 module Home.Model exposing (..)
 
-import Home.Msg exposing (Msg(..))
-
 
 type alias Model =
     String
+
+
+type Msg
+    = None
 
 
 initialState : Model

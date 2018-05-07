@@ -5,8 +5,7 @@ import Html.Attributes exposing (..)
 import Date exposing (Date)
 import Date.Format exposing (format)
 import RemoteData exposing (WebData)
-import Inventory.Msg exposing (Msg(..))
-import Inventory.Model exposing (Inventory, Inventories)
+import Inventory.Model exposing (Inventory, Inventories, Msg(..))
 
 
 view : WebData Inventories -> Html Msg
