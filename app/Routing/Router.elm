@@ -1,13 +1,6 @@
 module Routing.Router exposing (..)
 
 import Navigation exposing (Location)
-
-
---import Html exposing (..)
---import Html.Attributes exposing (..)
---import Html.Events exposing (..)
---import Html.Events.Extra exposing (onClickPreventDefault)
-
 import UrlParser exposing (oneOf, s, (</>), map, top, parsePath, Parser, parseHash)
 import Routing.Model exposing (Model, Route(..), reverseRoute)
 import Routing.Msg exposing (Msg(..))
@@ -20,41 +13,61 @@ import Inventory.Msg
 init : Location -> ( Model, Cmd Msg )
 init location =
     let
-        ( homeModel, homeCmd ) =
-            Home.Model.init
-
-        ( inventoryModel, inventoryCmd ) =
-            Inventory.Model.init
-
         currentRoute =
             parseLocation location
+
+        initModel =
+            { homeModel = Home.Model.initialState
+            , inventoryModel = Inventory.Model.initialState
+            , route = currentRoute
+            }
     in
-        ( { homeModel = homeModel
-          , inventoryModel = inventoryModel
-          , route = currentRoute
-          }
-        , initCmd currentRoute
-        )
+        initSubmodules currentRoute initModel
 
 
-initCmd : Route -> Cmd Msg
-initCmd route =
+initSubmodules : Route -> Model -> ( Model, Cmd Msg )
+initSubmodules route model =
     case route of
         HomeRoute ->
-            Cmd.none
+            initHome model
 
         InventoriesRoute ->
-            Cmd.none
+            initInventory model
 
         NotFoundRoute ->
-            Cmd.none
+            ( model, Cmd.none )
+
+
+initHome : Model -> ( Model, Cmd Msg )
+initHome model =
+    let
+        ( newHomeModel, homeCmd ) =
+            Home.Model.init
+    in
+        ( { model | homeModel = newHomeModel }, Cmd.map HomeMsg homeCmd )
+
+
+initInventory : Model -> ( Model, Cmd Msg )
+initInventory model =
+    let
+        ( newInventoryModel, inventoryCmd ) =
+            Inventory.Model.init
+    in
+        ( { model | inventoryModel = newInventoryModel }, Cmd.map InventoryMsg inventoryCmd )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LocationChanged location ->
-            ( { model | route = parseLocation location }, Cmd.none )
+            let
+                updatedRoute =
+                    parseLocation location
+
+                ( updatedModel, updatedCmd ) =
+                    initSubmodules updatedRoute model
+            in
+                ( { updatedModel | route = updatedRoute }, updatedCmd )
 
         NavigateTo route ->
             ( model, Navigation.newUrl (reverseRoute route) )

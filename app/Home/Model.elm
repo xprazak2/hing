@@ -7,9 +7,14 @@ type alias Model =
     String
 
 
+initialState : Model
+initialState =
+    "Empty value"
+
+
 init : ( Model, Cmd Msg )
 init =
-    ( "Initial value", Cmd.none )
+    ( "Initialized value", Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

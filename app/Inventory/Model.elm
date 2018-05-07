@@ -1,11 +1,12 @@
 module Inventory.Model exposing (..)
 
 import Date exposing (Date)
+import RemoteData exposing (WebData)
 import Inventory.Msg exposing (Msg(..))
 
 
 type alias Model =
-    { inventories : Inventories
+    { inventories : WebData Inventories
     }
 
 
@@ -21,9 +22,14 @@ type alias Inventories =
     List Inventory
 
 
+initialState : Model
+initialState =
+    { inventories = RemoteData.NotAsked }
+
+
 init : ( Model, Cmd Msg )
 init =
-    ( { inventories = [ Inventory "57a6s" "First Inventory" (dateFromString "2011/6/4") (dateFromString "2011/6/4") ] }, Cmd.none )
+    ( { inventories = RemoteData.Success [ Inventory "57a6s" "First Inventory" (dateFromString "2011/6/4") (dateFromString "2011/6/4") ] }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

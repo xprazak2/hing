@@ -4,11 +4,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Date exposing (Date)
 import Date.Format exposing (format)
+import RemoteData exposing (WebData)
 import Inventory.Msg exposing (Msg(..))
 import Inventory.Model exposing (Inventory, Inventories)
 
 
-view : Inventories -> Html Msg
+view : WebData Inventories -> Html Msg
 view inventories =
     div []
         [ div [ class "column-group" ]
@@ -26,10 +27,26 @@ view inventories =
                         , th [ class "align-left" ] [ text "Updated At" ]
                         ]
                     ]
-                , tbody [] (List.map inventoryRow inventories)
+                , tbody [] (showRows inventories)
                 ]
             ]
         ]
+
+
+showRows : WebData Inventories -> List (Html Msg)
+showRows inventoriesData =
+    case inventoriesData of
+        RemoteData.NotAsked ->
+            [ text "" ]
+
+        RemoteData.Loading ->
+            [ text "Loading..." ]
+
+        RemoteData.Success inventories ->
+            List.map inventoryRow inventories
+
+        RemoteData.Failure error ->
+            [ text (toString error) ]
 
 
 inventoryRow : Inventory -> Html Msg
