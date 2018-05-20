@@ -4,7 +4,8 @@ import Html exposing (Html)
 import Task exposing (Task)
 import Navigation exposing (Location)
 import Routing.Router as Router exposing (..)
-import Routing.Model exposing (Route(..))
+import Routing.Model
+import Routing.Routes exposing (Route(..))
 import Routing.Msg exposing (Msg(LocationChanged))
 import Routing.View
 

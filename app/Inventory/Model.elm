@@ -1,16 +1,24 @@
 module Inventory.Model exposing (..)
 
 import Date exposing (Date)
+import Navigation
 import RemoteData exposing (WebData)
+import Routing.Routes exposing (Route, reverseRoute)
 
 
 type Msg
     = LoadInventories (WebData Inventories)
+    | NavigateTo Route
 
 
 type alias Model =
     { inventories : WebData Inventories
+    , inventoryNew : InventoryBase
     }
+
+
+type alias InventoryBase =
+    { name : String }
 
 
 type alias Inventory =
@@ -27,7 +35,9 @@ type alias Inventories =
 
 initialState : Model
 initialState =
-    { inventories = RemoteData.NotAsked }
+    { inventories = RemoteData.NotAsked
+    , inventoryNew = InventoryBase ""
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -36,7 +46,5 @@ update msg model =
         LoadInventories inventories ->
             ( { model | inventories = inventories }, Cmd.none )
 
-
-dateFromString : String -> Date
-dateFromString string =
-    Date.fromString string |> Result.withDefault (Date.fromTime 0)
+        NavigateTo route ->
+            ( model, Navigation.newUrl (reverseRoute route) )

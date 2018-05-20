@@ -5,15 +5,39 @@ import Html.Attributes exposing (..)
 import Date exposing (Date)
 import Date.Format exposing (format)
 import RemoteData exposing (WebData)
-import Inventory.Model exposing (Inventory, Inventories, Msg(..))
+import Inventory.Routes exposing (Route(..))
+import Inventory.Model exposing (Inventory, Inventories, Msg(..), Model, InventoryBase)
+import Routing.Helpers
+import Routing.Routes
 
 
-view : WebData Inventories -> Html Msg
-view inventories =
+view : Route -> Model -> Html Msg
+view route model =
+    case route of
+        InventoriesRoute ->
+            viewInventories model.inventories
+
+        InventoryNewRoute ->
+            viewNew model.inventoryNew
+
+
+viewNew : InventoryBase -> Html Msg
+viewNew inventory =
+    div [] [ text "I am new inventory form" ]
+
+
+newInventoryRoute : Routing.Routes.Route
+newInventoryRoute =
+    Routing.Routes.InventoryRoute Inventory.Routes.InventoryNewRoute
+
+
+viewInventories : WebData Inventories -> Html Msg
+viewInventories inventories =
     div []
         [ div [ class "column-group" ]
             [ div [ class "top-space" ]
-                [ button [ class "ink-button push-right" ] [ text "New Inventory" ]
+                [ button ([ class "ink-button push-right" ] ++ (Routing.Helpers.linkAttrs newInventoryRoute NavigateTo))
+                    [ text "New Inventory" ]
                 ]
             ]
         , div [ class "column-group" ]

@@ -1,7 +1,8 @@
-module Routing.Model exposing (Model, Route(..), reverseRoute)
+module Routing.Model exposing (Model)
 
 import Home.Model
 import Inventory.Model
+import Routing.Routes exposing (Route)
 
 
 type alias Model =
@@ -9,22 +10,3 @@ type alias Model =
     , inventoryModel : Inventory.Model.Model
     , route : Route
     }
-
-
-type Route
-    = HomeRoute
-    | InventoriesRoute
-    | NotFoundRoute
-
-
-reverseRoute : Route -> String
-reverseRoute route =
-    case route of
-        HomeRoute ->
-            "/"
-
-        InventoriesRoute ->
-            "/inventories"
-
-        NotFoundRoute ->
-            "/notfound"

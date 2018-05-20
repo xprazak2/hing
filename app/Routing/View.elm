@@ -4,10 +4,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Events.Extra exposing (onClickPreventDefault)
-import Routing.Model exposing (Model, Route(..), reverseRoute)
+import Routing.Model exposing (Model)
+import Routing.Routes exposing (Route(..), reverseRoute)
 import Routing.Msg exposing (Msg(..))
 import Home.View
 import Inventory.View
+import Inventory.Routes
 
 
 view : Model -> Html Msg
@@ -24,8 +26,8 @@ showPage model =
         HomeRoute ->
             Html.map HomeMsg Home.View.view
 
-        InventoriesRoute ->
-            Html.map InventoryMsg (Inventory.View.view model.inventoryModel.inventories)
+        InventoryRoute route ->
+            Html.map InventoryMsg (Inventory.View.view route model.inventoryModel)
 
         NotFoundRoute ->
             div [] [ text "NotFound!" ]
@@ -38,7 +40,7 @@ navbar =
             [ li []
                 [ viewLink HomeRoute "Home" ]
             , li []
-                [ viewLink InventoriesRoute "Inventories" ]
+                [ viewLink (InventoryRoute Inventory.Routes.InventoriesRoute) "Inventories" ]
             ]
         ]
 

@@ -1,7 +1,7 @@
 module Routing.Msg exposing (..)
 
 import Navigation exposing (Location)
-import Routing.Model exposing (Route)
+import Routing.Routes exposing (Route)
 import Home.Model
 import Inventory.Model
 

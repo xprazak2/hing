@@ -1,16 +1,14 @@
 module Routing.Router exposing (..)
 
 import Navigation exposing (Location)
-import UrlParser exposing (oneOf, s, (</>), map, top, parsePath, Parser, parseHash)
-import Routing.Model exposing (Model, Route(..), reverseRoute)
+import UrlParser exposing (oneOf, s, (</>), map, top, parsePath, Parser)
+import Routing.Model exposing (Model)
+import Routing.Routes exposing (Route(..), reverseRoute)
 import Routing.Msg exposing (Msg(..))
 import Home.Model
 import Inventory.Model
-
-
---import Inventory.Msg
-
 import Inventory.Init
+import Inventory.Routes exposing (inventoryRouteMatcher)
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -34,8 +32,8 @@ initSubmodules route model =
         HomeRoute ->
             initHome model
 
-        InventoriesRoute ->
-            initInventory model
+        InventoryRoute inventoryRoute ->
+            initInventory model inventoryRoute
 
         NotFoundRoute ->
             ( model, Cmd.none )
@@ -50,11 +48,11 @@ initHome model =
         ( { model | homeModel = newHomeModel }, Cmd.map HomeMsg homeCmd )
 
 
-initInventory : Model -> ( Model, Cmd Msg )
-initInventory model =
+initInventory : Model -> Inventory.Routes.Route -> ( Model, Cmd Msg )
+initInventory model inventoryRoute =
     let
         ( newInventoryModel, inventoryCmd ) =
-            Inventory.Init.init
+            Inventory.Init.init inventoryRoute model.inventoryModel
     in
         ( { model | inventoryModel = newInventoryModel }, Cmd.map InventoryMsg inventoryCmd )
 
@@ -110,9 +108,23 @@ parseLocation location =
             NotFoundRoute
 
 
+
+--matchRoute : Parser (Route -> a) a
+--matchRoute =
+--    oneOf
+--        [ map HomeRoute top
+--        , map InventoriesRoute (UrlParser.s "inventories")
+--        ]
+
+
 matchRoute : Parser (Route -> a) a
 matchRoute =
     oneOf
-        [ map HomeRoute top
-        , map InventoriesRoute (UrlParser.s "inventories")
-        ]
+        (routeMatcher
+            ++ (List.map (\parser -> map InventoryRoute parser) inventoryRouteMatcher)
+        )
+
+
+routeMatcher : List (Parser (Route -> a) a)
+routeMatcher =
+    [ map HomeRoute top ]
