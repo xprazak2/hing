@@ -108,21 +108,21 @@ parseLocation location =
             NotFoundRoute
 
 
-
---matchRoute : Parser (Route -> a) a
---matchRoute =
---    oneOf
---        [ map HomeRoute top
---        , map InventoriesRoute (UrlParser.s "inventories")
---        ]
-
-
 matchRoute : Parser (Route -> a) a
 matchRoute =
     oneOf
         (routeMatcher
-            ++ (List.map (\parser -> map InventoryRoute parser) inventoryRouteMatcher)
+            ++ submoduleRouteMatcher InventoryRoute inventoryRouteMatcher
         )
+
+
+
+-- wtf type annotation
+
+
+submoduleRouteMatcher : (submoduleRoute -> Route) -> List (Parser (submoduleRoute -> Route) b) -> List (Parser (b -> c) c)
+submoduleRouteMatcher route routeMatcher =
+    List.map (\parser -> map route parser) routeMatcher
 
 
 routeMatcher : List (Parser (Route -> a) a)
