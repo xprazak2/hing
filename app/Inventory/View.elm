@@ -11,6 +11,11 @@ import Routing.Helpers
 import Routing.Routes
 
 
+navigateBtn : String -> Routing.Routes.Route -> String -> Html Msg
+navigateBtn label route classes =
+    button ([ class ("ink-button " ++ classes) ] ++ (Routing.Helpers.linkAttrs route NavigateTo)) [ text label ]
+
+
 view : Route -> Model -> Html Msg
 view route model =
     case route of
@@ -23,7 +28,31 @@ view route model =
 
 viewNew : InventoryBase -> Html Msg
 viewNew inventory =
-    div [] [ text "I am new inventory form" ]
+    div []
+        [ div [ class "column-group" ]
+            [ div [ class "top-space all-50" ]
+                [ h2 [] [ text "New Inventory" ]
+                , Html.form [ class "ink-form" ]
+                    [ div [ class "control-group required" ]
+                        [ label [ for "name" ] [ text "Name" ]
+                        , div [ class "control" ]
+                            [ input [ id "name", name "name", type_ "text" ] [] ]
+                        ]
+                    , div [ class "control-group button-toolbar" ]
+                        [ div [ class "button-group" ]
+                            [ button [ type_ "submit", class "ink-button blue" ] [ text "Submit" ] ]
+                        , div [ class "button-group" ]
+                            [ navigateBtn "Cancel" inventoriesRoute "" ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
+
+inventoriesRoute : Routing.Routes.Route
+inventoriesRoute =
+    Routing.Routes.InventoryRoute Inventory.Routes.InventoriesRoute
 
 
 newInventoryRoute : Routing.Routes.Route
@@ -36,8 +65,8 @@ viewInventories inventories =
     div []
         [ div [ class "column-group" ]
             [ div [ class "top-space" ]
-                [ button ([ class "ink-button push-right" ] ++ (Routing.Helpers.linkAttrs newInventoryRoute NavigateTo))
-                    [ text "New Inventory" ]
+                [ h2 [] [ text "Inventories" ]
+                , navigateBtn "New Inventory" newInventoryRoute "push-right"
                 ]
             ]
         , div [ class "column-group" ]
