@@ -16,6 +16,13 @@ fetchInventories =
         |> Cmd.map LoadInventories
 
 
+fetchInventory : String -> Cmd Msg
+fetchInventory id =
+    Http.get (api ("/lists/" ++ id)) inventoryDecoder
+        |> RemoteData.sendRequest
+        |> Cmd.map LoadInventory
+
+
 inventoryDecoder : Decoder Inventory
 inventoryDecoder =
     decode Inventory

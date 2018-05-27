@@ -2,18 +2,27 @@ module Inventory.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Date exposing (Date)
 import Date.Format exposing (format)
 import RemoteData exposing (WebData)
 import Inventory.Routes exposing (Route(..))
-import Inventory.Model exposing (Inventory, Inventories, Msg(..), Model, InventoryBase)
+import Inventory.Model exposing (Inventory, Inventories, Msg(..), Model)
+import Inventory.Form exposing (FormModel)
 import Routing.Helpers
 import Routing.Routes
+import Debug
 
 
 navigateBtn : String -> Routing.Routes.Route -> String -> Html Msg
 navigateBtn label route classes =
     button ([ class ("ink-button " ++ classes) ] ++ (Routing.Helpers.linkAttrs route NavigateTo)) [ text label ]
+
+
+link : String -> Routing.Routes.Route -> Html Msg
+link label route =
+    a (Routing.Helpers.linkAttrs route NavigateTo)
+        [ text label ]
 
 
 view : Route -> Model -> Html Msg
@@ -23,20 +32,48 @@ view route model =
             viewInventories model.inventories
 
         InventoryNewRoute ->
-            viewNew model.inventoryNew
+            viewNew model.formModel
+
+        InventoryShowRoute id ->
+            viewShow model.inventory id
 
 
-viewNew : InventoryBase -> Html Msg
-viewNew inventory =
-    div []
+viewShow : WebData Inventory -> String -> Html Msg
+viewShow inventory id =
+    div [ class "top-space" ]
         [ div [ class "column-group" ]
-            [ div [ class "top-space all-50" ]
+            [ div []
+                [ h2 [] [ text "Inventory name" ]
+                , div [] [ text "page content" ]
+                ]
+            ]
+        ]
+
+
+nestedOnInput : (String -> Inventory.Form.Msg) -> Attribute Msg
+nestedOnInput msg =
+    Html.Attributes.map FormMsg (onInput msg)
+
+
+viewNew : FormModel -> Html Msg
+viewNew inventory =
+    div [ class "top-space" ]
+        [ div [ class "column-group" ]
+            [ div [ class "all-50" ]
                 [ h2 [] [ text "New Inventory" ]
-                , Html.form [ class "ink-form" ]
+                , Html.form [ class "ink-form", onSubmit (FormMsg Inventory.Form.Submit) ]
                     [ div [ class "control-group required" ]
                         [ label [ for "name" ] [ text "Name" ]
                         , div [ class "control" ]
-                            [ input [ id "name", name "name", type_ "text" ] [] ]
+                            [ input
+                                [ id "name"
+                                , name "name"
+                                , type_ "text"
+                                , value inventory.name
+                                , nestedOnInput Inventory.Form.NameInput
+                                ]
+                                []
+                            ]
                         ]
                     , div [ class "control-group button-toolbar" ]
                         [ div [ class "button-group" ]
@@ -60,11 +97,16 @@ newInventoryRoute =
     Routing.Routes.InventoryRoute Inventory.Routes.InventoryNewRoute
 
 
+inventoryRoute : String -> Routing.Routes.Route
+inventoryRoute id =
+    Routing.Routes.InventoryRoute (Inventory.Routes.InventoryShowRoute id)
+
+
 viewInventories : WebData Inventories -> Html Msg
 viewInventories inventories =
-    div []
+    div [ class "top-space" ]
         [ div [ class "column-group" ]
-            [ div [ class "top-space" ]
+            [ div []
                 [ h2 [] [ text "Inventories" ]
                 , navigateBtn "New Inventory" newInventoryRoute "push-right"
                 ]
@@ -105,7 +147,7 @@ inventoryRow : Inventory -> Html Msg
 inventoryRow inventory =
     tr []
         [ td []
-            [ text inventory.name ]
+            [ link inventory.name (inventoryRoute inventory.id) ]
         , td []
             [ text inventory.id ]
         , td []
