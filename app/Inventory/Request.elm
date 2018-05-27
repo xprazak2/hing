@@ -18,7 +18,7 @@ fetchInventories =
 
 fetchInventory : String -> Cmd Msg
 fetchInventory id =
-    Http.get (api ("/lists/" ++ id)) inventoryDecoder
+    Http.get (api ("/lists/" ++ id)) (Decode.field "result" inventoryDecoder)
         |> RemoteData.sendRequest
         |> Cmd.map LoadInventory
 

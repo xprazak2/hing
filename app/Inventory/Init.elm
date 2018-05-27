@@ -15,7 +15,7 @@ init route model =
             ( { model | inventories = RemoteData.Loading }, fetchInventories )
 
         InventoryNewRoute ->
-            ( { model | formModel = FormModel "" }, Cmd.none )
+            ( { model | formModel = Inventory.Form.initFormModel }, Cmd.none )
 
         InventoryShowRoute id ->
             initShow id model

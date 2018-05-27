@@ -35,16 +35,53 @@ view route model =
             viewNew model.formModel
 
         InventoryShowRoute id ->
-            viewShow model.inventory id
+            viewShow model.inventory
 
 
-viewShow : WebData Inventory -> String -> Html Msg
-viewShow inventory id =
+viewShow : WebData Inventory -> Html Msg
+viewShow inventoryData =
+    case inventoryData of
+        RemoteData.NotAsked ->
+            div [] [ text "" ]
+
+        RemoteData.Loading ->
+            div [] [ text "Loading..." ]
+
+        RemoteData.Success inventory ->
+            viewShowInventory inventory
+
+        RemoteData.Failure error ->
+            div [] [ text (toString error) ]
+
+
+viewShowInventory : Inventory -> Html Msg
+viewShowInventory inventory =
     div [ class "top-space" ]
         [ div [ class "column-group" ]
-            [ div []
-                [ h2 [] [ text "Inventory name" ]
-                , div [] [ text "page content" ]
+            [ div [ class "all-50" ]
+                [ h2 [] [ text inventory.name ]
+                , Html.form [ class "ink-form" ]
+                    [ div [ class "control-group column-group gutters" ]
+                        [ label [ for "name", class "all-20 align-right" ] [ text "Name" ]
+                        , div [ class "control all-80" ]
+                            [ div [] [ text inventory.name ] ]
+                        ]
+                    , div [ class "control-group column-group gutters" ]
+                        [ label [ for "id", class "all-20 align-right" ] [ text "ID" ]
+                        , div [ class "control all-80" ]
+                            [ div [] [ text inventory.id ] ]
+                        ]
+                    , div [ class "control-group column-group gutters" ]
+                        [ label [ for "id", class "all-20 align-right" ] [ text "Created At" ]
+                        , div [ class "control all-80" ]
+                            [ div [] [ text (formatDate inventory.createdAt) ] ]
+                        ]
+                    , div [ class "control-group column-group gutters" ]
+                        [ label [ for "id", class "all-20 align-right" ] [ text "Updated At" ]
+                        , div [ class "control all-80" ]
+                            [ div [] [ text (formatDate inventory.updatedAt) ] ]
+                        ]
+                    ]
                 ]
             ]
         ]
@@ -56,7 +93,7 @@ nestedOnInput msg =
 
 
 viewNew : FormModel -> Html Msg
-viewNew inventory =
+viewNew formModel =
     div [ class "top-space" ]
         [ div [ class "column-group" ]
             [ div [ class "all-50" ]
@@ -69,7 +106,7 @@ viewNew inventory =
                                 [ id "name"
                                 , name "name"
                                 , type_ "text"
-                                , value inventory.name
+                                , value (Inventory.Form.formFieldValue "name" formModel)
                                 , nestedOnInput Inventory.Form.NameInput
                                 ]
                                 []

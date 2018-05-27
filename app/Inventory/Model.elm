@@ -36,7 +36,7 @@ type alias Inventories =
 initialState : Model
 initialState =
     { inventories = RemoteData.NotAsked
-    , formModel = FormModel ""
+    , formModel = initFormModel
     , inventory = RemoteData.NotAsked
     }
 
@@ -51,7 +51,16 @@ update msg model =
             ( { model | inventory = inventory }, Cmd.none )
 
         FormMsg formMsg ->
-            ( { model | formModel = updateForm formMsg model.formModel }, Cmd.none )
+            updateForm formMsg model
 
         NavigateTo route ->
             ( model, Navigation.newUrl (reverseRoute route) )
+
+
+updateForm : Inventory.Form.Msg -> Model -> ( Model, Cmd Msg )
+updateForm msg model =
+    let
+        ( newFormModel, formCmd ) =
+            Inventory.Form.update msg model.formModel
+    in
+        ( { model | formModel = newFormModel }, Cmd.map FormMsg formCmd )
