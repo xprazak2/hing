@@ -1,7 +1,8 @@
 module Inventory.Init exposing (..)
 
-import Inventory.Model exposing (Model, Msg, Inventory, Inventories)
-import Inventory.Form exposing (FormModel)
+import Inventory.Model exposing (Model, Inventory, Inventories)
+import Inventory.Msg exposing (Msg)
+import Inventory.Form.Model exposing (FormModel)
 import RemoteData
 import List.Extra
 import Inventory.Request exposing (fetchInventories, fetchInventory)
@@ -15,7 +16,7 @@ init route model =
             ( { model | inventories = RemoteData.Loading }, fetchInventories )
 
         InventoryNewRoute ->
-            ( { model | formModel = Inventory.Form.initFormModel }, Cmd.none )
+            ( { model | formModel = Inventory.Form.Model.initFormModel }, Cmd.none )
 
         InventoryShowRoute id ->
             initShow id model

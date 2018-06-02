@@ -8,7 +8,9 @@ import Routing.Msg exposing (Msg(..))
 import Home.Model
 import Inventory.Model
 import Inventory.Init
+import Inventory.Update
 import Inventory.Routes exposing (inventoryRouteMatcher)
+import Inventory.Msg
 
 
 init : Location -> ( Model, Cmd Msg )
@@ -89,11 +91,11 @@ updateHome model homeMsg =
         ( { model | homeModel = newHomeModel }, Cmd.map HomeMsg homeCmd )
 
 
-updateInventory : Model -> Inventory.Model.Msg -> ( Model, Cmd Msg )
+updateInventory : Model -> Inventory.Msg.Msg -> ( Model, Cmd Msg )
 updateInventory model inventoryMsg =
     let
         ( newInventoryModel, inventoryCmd ) =
-            Inventory.Model.update inventoryMsg model.inventoryModel
+            Inventory.Update.update inventoryMsg model.inventoryModel
     in
         ( { model | inventoryModel = newInventoryModel }, Cmd.map InventoryMsg inventoryCmd )
 

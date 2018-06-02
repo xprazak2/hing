@@ -8,8 +8,10 @@ import Date.Format exposing (format)
 import RemoteData exposing (WebData)
 import Inventory.Routes exposing (Route(..))
 import Inventory.RouteHelpers exposing (..)
-import Inventory.Model exposing (Inventory, Inventories, Msg(..), Model)
-import Inventory.Form exposing (FormModel)
+import Inventory.Model exposing (Inventory, Inventories, Model)
+import Inventory.Msg exposing (Msg(..))
+import Inventory.Form.Msg
+import Inventory.Form.Model exposing (FormModel)
 import Routing.Helpers exposing (..)
 import Routing.Routes
 import Debug
@@ -88,7 +90,7 @@ viewShowInventory inventory =
         ]
 
 
-nestedOnInput : (String -> Inventory.Form.Msg) -> Attribute Msg
+nestedOnInput : (String -> Inventory.Form.Msg.Msg) -> Attribute Msg
 nestedOnInput msg =
     Html.Attributes.map FormMsg (onInput msg)
 
@@ -104,7 +106,7 @@ viewNew formModel =
         [ div [ class "column-group" ]
             [ div [ class "all-50" ]
                 [ h2 [] [ text "New Inventory" ]
-                , Html.form [ class "ink-form", onSubmit (FormMsg Inventory.Form.Submit) ]
+                , Html.form [ class "ink-form", onSubmit (FormMsg Inventory.Form.Msg.Submit) ]
                     [ div [ class "control-group required" ]
                         [ label [ for "name" ] [ text "Name" ]
                         , div [ class "control" ]
@@ -112,8 +114,8 @@ viewNew formModel =
                                 [ id "name"
                                 , name "name"
                                 , type_ "text"
-                                , value (Inventory.Form.formFieldValue "name" formModel)
-                                , nestedOnInput Inventory.Form.NameInput
+                                , value (Inventory.Form.Model.formFieldValue "name" formModel)
+                                , nestedOnInput Inventory.Form.Msg.NameInput
                                 ]
                                 []
                             ]

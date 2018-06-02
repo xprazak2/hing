@@ -7,8 +7,10 @@ import Json.Decode.Extra
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
 import Api exposing (api)
-import Inventory.Model exposing (Inventory, Inventories, Msg(..))
-import Inventory.Form exposing (FormInputField, FormModel, formFieldValue)
+import Inventory.Model exposing (Inventory, Inventories)
+import Inventory.Msg exposing (Msg(..))
+import Inventory.Form.Model exposing (FormInputField, FormModel, formFieldValue)
+import Inventory.Form.Msg
 
 
 fetchInventories : Cmd Msg
@@ -25,14 +27,14 @@ fetchInventory id =
         |> Cmd.map LoadInventory
 
 
-saveInventory : FormModel -> Cmd Msg
+saveInventory : FormModel -> Cmd Inventory.Form.Msg.Msg
 saveInventory formModel =
     Http.post
         (api "/lists")
         (inventoryEncoder formModel |> Http.jsonBody)
         (Decode.field "result" inventoryDecoder)
         |> RemoteData.sendRequest
-        |> Cmd.map CreateInventory
+        |> Cmd.map Inventory.Form.Msg.CreateInventory
 
 
 inventoryEncoder : FormModel -> Encode.Value

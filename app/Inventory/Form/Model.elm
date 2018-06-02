@@ -1,15 +1,7 @@
-module Inventory.Form exposing (..)
+module Inventory.Form.Model exposing (..)
 
-import Http
 import Debug
 import List.Extra
-import Routing.RequestHelpers exposing (errorToString)
-import Inventory.Request
-
-
-type Msg
-    = NameInput String
-    | Submit
 
 
 type alias FormModel =
@@ -58,35 +50,3 @@ formFieldByName name formModel =
 formFieldValue : String -> FormModel -> String
 formFieldValue name formModel =
     (formFieldByName name formModel).value
-
-
-update : Msg -> FormModel -> ( FormModel, Cmd Msg )
-update msg model =
-    case msg of
-        NameInput string ->
-            ( updateFormField "name" string model, Cmd.none )
-
-        Submit ->
-            ( { formModel | submitting = True }, Inventory.Request.saveInventory formModel )
-
-
-addFormErrors : Http.Error -> FormModel -> FormModel
-addFormErrors errors formModel =
-    { formModel | serverError = errorToString errors, submitting = False }
-
-
-updateFormField : String -> String -> FormModel -> FormModel
-updateFormField fieldName newValue formModel =
-    let
-        updatedFields =
-            List.map (mapField fieldName newValue) formModel.fields
-    in
-        { formModel | fields = updatedFields }
-
-
-mapField : String -> String -> FormInputField -> FormInputField
-mapField name newValue field =
-    if field.fieldName == name then
-        { field | value = newValue }
-    else
-        field
