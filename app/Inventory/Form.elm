@@ -1,7 +1,10 @@
 module Inventory.Form exposing (..)
 
+import Http
 import Debug
 import List.Extra
+import Routing.RequestHelpers exposing (errorToString)
+import Inventory.Request
 
 
 type Msg
@@ -13,6 +16,7 @@ type alias FormModel =
     { fields : List FormInputField
     , submitting : Bool
     , errored : Bool
+    , serverError : String
     }
 
 
@@ -30,7 +34,11 @@ initFormInputField fieldName =
 
 initFormModel : FormModel
 initFormModel =
-    { fields = [ initFormInputField "name" ], submitting = False, errored = False }
+    { fields = [ initFormInputField "name" ]
+    , submitting = False
+    , errored = False
+    , serverError = ""
+    }
 
 
 formFieldByName : String -> FormModel -> FormInputField
@@ -58,9 +66,13 @@ update msg model =
         NameInput string ->
             ( updateFormField "name" string model, Cmd.none )
 
-        --( { model | name = string }, Cmd.none )
         Submit ->
-            ( model, Cmd.none )
+            ( { formModel | submitting = True }, Inventory.Request.saveInventory formModel )
+
+
+addFormErrors : Http.Error -> FormModel -> FormModel
+addFormErrors errors formModel =
+    { formModel | serverError = errorToString errors, submitting = False }
 
 
 updateFormField : String -> String -> FormModel -> FormModel

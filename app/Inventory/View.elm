@@ -7,9 +7,10 @@ import Date exposing (Date)
 import Date.Format exposing (format)
 import RemoteData exposing (WebData)
 import Inventory.Routes exposing (Route(..))
+import Inventory.RouteHelpers exposing (..)
 import Inventory.Model exposing (Inventory, Inventories, Msg(..), Model)
 import Inventory.Form exposing (FormModel)
-import Routing.Helpers
+import Routing.Helpers exposing (..)
 import Routing.Routes
 import Debug
 
@@ -92,6 +93,11 @@ nestedOnInput msg =
     Html.Attributes.map FormMsg (onInput msg)
 
 
+formDisabled : FormModel -> Bool
+formDisabled formModel =
+    formModel.submitting || formModel.errored
+
+
 viewNew : FormModel -> Html Msg
 viewNew formModel =
     div [ class "top-space" ]
@@ -114,7 +120,13 @@ viewNew formModel =
                         ]
                     , div [ class "control-group button-toolbar" ]
                         [ div [ class "button-group" ]
-                            [ button [ type_ "submit", class "ink-button blue" ] [ text "Submit" ] ]
+                            [ button
+                                [ type_ "submit"
+                                , class "ink-button blue"
+                                , disabled (formDisabled formModel)
+                                ]
+                                [ text "Submit" ]
+                            ]
                         , div [ class "button-group" ]
                             [ navigateBtn "Cancel" inventoriesRoute "" ]
                         ]
@@ -122,21 +134,6 @@ viewNew formModel =
                 ]
             ]
         ]
-
-
-inventoriesRoute : Routing.Routes.Route
-inventoriesRoute =
-    Routing.Routes.InventoryRoute Inventory.Routes.InventoriesRoute
-
-
-newInventoryRoute : Routing.Routes.Route
-newInventoryRoute =
-    Routing.Routes.InventoryRoute Inventory.Routes.InventoryNewRoute
-
-
-inventoryRoute : String -> Routing.Routes.Route
-inventoryRoute id =
-    Routing.Routes.InventoryRoute (Inventory.Routes.InventoryShowRoute id)
 
 
 viewInventories : WebData Inventories -> Html Msg

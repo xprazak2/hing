@@ -5,8 +5,10 @@ import RemoteData
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Extra
 import Json.Decode.Pipeline exposing (decode, required)
+import Json.Encode as Encode
 import Api exposing (api)
 import Inventory.Model exposing (Inventory, Inventories, Msg(..))
+import Inventory.Form exposing (FormInputField, FormModel, formFieldValue)
 
 
 fetchInventories : Cmd Msg
@@ -21,6 +23,26 @@ fetchInventory id =
     Http.get (api ("/lists/" ++ id)) (Decode.field "result" inventoryDecoder)
         |> RemoteData.sendRequest
         |> Cmd.map LoadInventory
+
+
+saveInventory : FormModel -> Cmd Msg
+saveInventory formModel =
+    Http.post
+        (api "/lists")
+        (inventoryEncoder formModel |> Http.jsonBody)
+        (Decode.field "result" inventoryDecoder)
+        |> RemoteData.sendRequest
+        |> Cmd.map CreateInventory
+
+
+inventoryEncoder : FormModel -> Encode.Value
+inventoryEncoder formModel =
+    let
+        -- TODO find a way how not to encode fields manually
+        attrs =
+            Encode.object [ ( "name", Encode.string (formFieldValue "name" formModel) ) ]
+    in
+        Encode.object [ ( "list", attrs ) ]
 
 
 inventoryDecoder : Decoder Inventory
