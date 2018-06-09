@@ -4,12 +4,14 @@ import Date exposing (Date)
 import RemoteData exposing (WebData)
 import Inventory.RouteHelpers exposing (..)
 import Inventory.Form.Model exposing (..)
+import Modal.Model
 
 
 type alias Model =
     { inventories : WebData Inventories
     , formModel : FormModel
     , inventory : WebData Inventory
+    , modalModel : Modal.Model.Model
     }
 
 
@@ -30,4 +32,5 @@ initialState =
     { inventories = RemoteData.NotAsked
     , formModel = initFormModel
     , inventory = RemoteData.NotAsked
+    , modalModel = Modal.Model.initialState
     }

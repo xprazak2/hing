@@ -3,6 +3,7 @@ module Inventory.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Html.Events.Extra exposing (onClickPreventDefault)
 import Date exposing (Date)
 import Date.Format exposing (format)
 import RemoteData exposing (WebData)
@@ -14,7 +15,8 @@ import Inventory.Form.Msg
 import Inventory.Form.Model exposing (FormModel)
 import Routing.Helpers exposing (..)
 import Routing.Routes
-import Debug
+import Modal.View
+import Modal.Msg
 
 
 navigateBtn : String -> Routing.Routes.Route -> String -> Html Msg
@@ -32,7 +34,7 @@ view : Route -> Model -> Html Msg
 view route model =
     case route of
         InventoriesRoute ->
-            viewInventories model.inventories
+            viewInventories model
 
         InventoryNewRoute ->
             viewNew model.formModel
@@ -138,8 +140,8 @@ viewNew formModel =
         ]
 
 
-viewInventories : WebData Inventories -> Html Msg
-viewInventories inventories =
+viewInventories : Model -> Html Msg
+viewInventories model =
     div [ class "top-space" ]
         [ div [ class "column-group" ]
             [ div []
@@ -147,7 +149,8 @@ viewInventories inventories =
                 , navigateBtn "New Inventory" newInventoryRoute "push-right"
                 ]
             ]
-        , div [ class "column-group" ]
+        , Modal.View.view model.modalModel |> Html.map ModalMsg
+        , div [ class "column-group red" ]
             [ table [ class "ink-table alternating" ]
                 [ thead []
                     [ tr []
@@ -155,9 +158,10 @@ viewInventories inventories =
                         , th [ class "align-left" ] [ text "Id" ]
                         , th [ class "align-left" ] [ text "Created At" ]
                         , th [ class "align-left" ] [ text "Updated At" ]
+                        , th [ class "align-left" ] [ text "Action" ]
                         ]
                     ]
-                , tbody [] (showRows inventories)
+                , tbody [] (showRows model.inventories)
                 ]
             ]
         ]
@@ -190,7 +194,15 @@ inventoryRow inventory =
             [ text (formatDate inventory.createdAt) ]
         , td []
             [ text (formatDate inventory.updatedAt) ]
+        , td []
+            [ deleteLink ]
         ]
+
+
+deleteLink : Html Msg
+deleteLink =
+    a [ onClickPreventDefault (ModalMsg Modal.Msg.Open) ]
+        [ text "Delete" ]
 
 
 formatDate : Date -> String

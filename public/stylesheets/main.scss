@@ -1,3 +1,15 @@
 .ink-navigation ul.menu.blue li a.active {
   text-decoration: underline;
 }
+
+.modal-visible {
+  display: block;
+}
+
+.modal-invisible {
+  display: none;
+}
+
+.red {
+  background-color: red;
+}

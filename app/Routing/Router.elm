@@ -63,14 +63,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LocationChanged location ->
-            let
-                updatedRoute =
-                    parseLocation location
-
-                ( updatedModel, updatedCmd ) =
-                    initSubmodules updatedRoute model
-            in
-                ( { updatedModel | route = updatedRoute }, updatedCmd )
+            updateLocation location model
 
         NavigateTo route ->
             ( model, Navigation.newUrl (reverseRoute route) )
@@ -80,6 +73,18 @@ update msg model =
 
         InventoryMsg inventoryMsg ->
             updateInventory model inventoryMsg
+
+
+updateLocation : Location -> Model -> ( Model, Cmd Msg )
+updateLocation location model =
+    let
+        updatedRoute =
+            parseLocation location
+
+        ( updatedModel, updatedCmd ) =
+            initSubmodules updatedRoute model
+    in
+        ( { updatedModel | route = updatedRoute }, updatedCmd )
 
 
 updateHome : Model -> Home.Model.Msg -> ( Model, Cmd Msg )
@@ -118,10 +123,8 @@ matchRoute =
         )
 
 
-
--- wtf type annotation
-
-
+{-| wtf type annotation
+-}
 submoduleRouteMatcher : (submoduleRoute -> Route) -> List (Parser (submoduleRoute -> Route) b) -> List (Parser (b -> c) c)
 submoduleRouteMatcher route routeMatcher =
     List.map (\parser -> map route parser) routeMatcher

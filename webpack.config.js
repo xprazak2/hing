@@ -7,7 +7,7 @@ var webpack = require('webpack');
 
 module.exports = {
   mode: 'development',
-  entry: './app/elm.js',
+  entry: ['./app/elm.js', './public/stylesheets/main.scss'],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js'
@@ -22,7 +22,17 @@ module.exports = {
       {
         test: /\.scss$/,
         exclude: [/elm-stuff/, /node_modules/],
-        loader: ['style-loader', 'css-loader?sourceMap', 'sass-loader?sourceMap']
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'sass-loader',
+          },
+        ],
       },
       {
         test: /\.js$/,

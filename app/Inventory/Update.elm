@@ -8,6 +8,8 @@ import Inventory.Msg exposing (Msg(..))
 import Inventory.Form.Model
 import Inventory.Form.Update
 import Inventory.Form.Msg
+import Modal.Msg
+import Modal.Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -22,8 +24,20 @@ update msg model =
         FormMsg formMsg ->
             updateForm formMsg model
 
+        ModalMsg modalMsg ->
+            updateModal modalMsg model
+
         NavigateTo route ->
             ( model, Navigation.newUrl (reverseRoute route) )
+
+
+updateModal : Modal.Msg.Msg -> Model -> ( Model, Cmd Msg )
+updateModal modalMsg model =
+    let
+        ( newModalModel, modalCmd ) =
+            Modal.Update.update modalMsg model.modalModel
+    in
+        ( { model | modalModel = newModalModel }, Cmd.map ModalMsg modalCmd )
 
 
 updateForm : Inventory.Form.Msg.Msg -> Model -> ( Model, Cmd Msg )

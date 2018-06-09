@@ -29,7 +29,9 @@ createInventory : WebData Inventory -> FormModel -> ( FormModel, Cmd Msg )
 createInventory inventoryData formModel =
     case inventoryData of
         RemoteData.Success inventory ->
-            ( formModel, reverseRoute (inventoryRoute inventory.id) |> Navigation.newUrl )
+            ( { formModel | submitting = False }
+            , reverseRoute (inventoryRoute inventory.id) |> Navigation.newUrl
+            )
 
         RemoteData.Failure err ->
             ( addFormErrors err formModel, Cmd.none )
