@@ -17,3 +17,8 @@ newInventoryRoute =
 inventoryRoute : String -> Routing.Routes.Route
 inventoryRoute id =
     Routing.Routes.InventoryRoute (Inventory.Routes.InventoryShowRoute id)
+
+
+deleteRoute : String -> Routing.Routes.Route
+deleteRoute id =
+    Routing.Routes.InventoryRoute (Inventory.Routes.InventoryDeleteRoute id)

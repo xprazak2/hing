@@ -17,6 +17,7 @@ import Routing.Helpers exposing (..)
 import Routing.Routes
 import Modal.View
 import Modal.Msg
+import Modal.Model
 
 
 navigateBtn : String -> Routing.Routes.Route -> String -> Html Msg
@@ -149,8 +150,8 @@ viewInventories model =
                 , navigateBtn "New Inventory" newInventoryRoute "push-right"
                 ]
             ]
-        , Modal.View.view model.modalModel |> Html.map ModalMsg
-        , div [ class "column-group red" ]
+        , Modal.View.view model.modalModel deleteRoute |> Html.map ModalMsg
+        , div [ class "column-group" ]
             [ table [ class "ink-table alternating" ]
                 [ thead []
                     [ tr []
@@ -199,9 +200,14 @@ inventoryRow inventory =
         ]
 
 
-deleteLink : Html Msg
-deleteLink =
-    a [ onClickPreventDefault (ModalMsg Modal.Msg.Open) ]
+deleteLink : Inventory -> Html Msg
+deleteLink inventory =
+    a
+        [ Modal.Model.Payload inventory.id
+            |> Modal.Msg.Open
+            |> ModalMsg
+            |> onClickPreventDefault
+        ]
         [ text "Delete" ]
 
 

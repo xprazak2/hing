@@ -1,7 +1,10 @@
 module Modal.Msg exposing (..)
 
+import Modal.Model exposing (SubmitPayload(..))
+
 
 type Msg
-    = Open
+    = Open SubmitPayload
     | Close
-    | Working
+    | Submit SubmitPayload
+    | IsWorking Bool

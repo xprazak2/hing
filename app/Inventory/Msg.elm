@@ -10,6 +10,7 @@ import Modal.Msg
 type Msg
     = LoadInventories (WebData Inventories)
     | LoadInventory (WebData Inventory)
+    | DeleteInventory Inventory
     | FormMsg Inventory.Form.Msg.Msg
     | ModalMsg Modal.Msg.Msg
     | NavigateTo Route

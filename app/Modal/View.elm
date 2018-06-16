@@ -2,12 +2,15 @@ module Modal.View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Modal.Model exposing (Model)
+import Html.Events exposing (onClick)
+import Html.Events.Extra exposing (onClickPreventDefault)
+import Modal.Model exposing (Model, SubmitPayload(..))
 import Modal.Msg exposing (Msg(..))
+import Routing.Msg
 
 
-view : Model -> Html Msg
-view model =
+view : Model -> Routing.Msg.Msg -> Html Msg
+view model confirmMsg =
     div [ modalState model |> class ]
         [ div
             [ class "ink-modal fade"
@@ -17,14 +20,16 @@ view model =
             , attribute "aria-labelled-by" "modal-title"
             ]
             [ div [ class "modal-header" ]
-                [ button [ class "modal-close ink-dismiss" ]
-                    [ h3 [] [ text "Modal header" ] ]
+                [ button [ class "modal-close ink-dismiss", onClick Close ] []
+                , h3 [] [ text "Modal header" ]
                 ]
             , div [ class "modal-body", id "modalContent" ]
                 [ h4 [] [ text "Modal text" ] ]
+            , div [ class "footer-container" ]
+                []
             , div [ class "modal-footer" ]
                 [ div [ class "push-right" ]
-                    [ button [ class "ink-button caution ink-dismiss" ] [ text "Close" ] ]
+                    [ button [ class "ink-button caution ink-dismiss", onClick (Submit confirmMsg) ] [ text "Close" ] ]
                 ]
             ]
         ]

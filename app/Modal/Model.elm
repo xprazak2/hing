@@ -1,10 +1,21 @@
-module Modal.Model exposing (Model, initialState)
+module Modal.Model exposing (..)
+
+
+type SubmitPayload
+    = Payload String
+    | Nothing
 
 
 type alias Model =
-    { opened : Bool }
+    { opened : Bool
+    , working : Bool
+    , submitPayload : SubmitPayload
+    }
 
 
 initialState : Model
 initialState =
-    { opened = False }
+    { opened = False
+    , working = False
+    , submitPayload = Nothing
+    }

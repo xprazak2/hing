@@ -21,6 +21,9 @@ init route model =
         InventoryShowRoute id ->
             initShow id model
 
+        InventoryDeleteRoute id ->
+            ( model, Cmd.none )
+
 
 initShow : String -> Model -> ( Model, Cmd Msg )
 initShow id model =

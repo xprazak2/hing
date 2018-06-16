@@ -21,6 +21,9 @@ update msg model =
         LoadInventory inventory ->
             ( { model | inventory = inventory }, Cmd.none )
 
+        DeleteInventory inventory ->
+            deleteInventory inventory model
+
         FormMsg formMsg ->
             updateForm formMsg model
 
@@ -29,6 +32,11 @@ update msg model =
 
         NavigateTo route ->
             ( model, Navigation.newUrl (reverseRoute route) )
+
+
+deleteInventory : Inventory -> Model -> ( Model, Cmd Msg )
+deleteInventory inventory model =
+    ( model, Cmd.none )
 
 
 updateModal : Modal.Msg.Msg -> Model -> ( Model, Cmd Msg )
